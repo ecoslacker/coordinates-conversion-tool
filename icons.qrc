@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/">
+        <file>icons/world.png</file>
+        <file>icons/exit.png</file>
+        <file>icons/about.png</file>
+        <file>icons/world-go.png</file>
+        <file>icons/globe.png</file>
+    </qresource>
+</RCC>
