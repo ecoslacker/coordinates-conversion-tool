@@ -7,6 +7,13 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    // Hide the text edit widgets from batch conversion
+    ui->geoCoordinates->hide();
+    ui->utmCoordinates->hide();
+    ui->convertButton->hide();
+
+    this->adjustSize();
+
     // By creating an action group the items become auto exclusive, only one can be checked
     datumGroup = new QActionGroup(this);
     datumGroup->addAction(ui->actionHayford);
@@ -19,6 +26,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionWGS84, SIGNAL(triggered()), SLOT(updateStatusBar()));
     connect(ui->latitudeSexsagecimal, SIGNAL(textChanged(QString)), SLOT(lat2dec(QString)));
     connect(ui->longitudeSexagecimal, SIGNAL(textChanged(QString)), SLOT(lon2dec(QString)));
+    connect(ui->actionBatchConversion, SIGNAL(triggered(bool)), SLOT(configureBatchConversion()));
+    connect(ui->convertButton, SIGNAL(clicked(bool)), SLOT(batchConversionGCS()));
 
     ui->actionWGS84->setChecked(true);
 }
@@ -36,30 +45,40 @@ void MainWindow::utm2gcs()
      *                                                                                         *
      *******************************************************************************************/
 
-    if (ui->x->text().toDouble() > 0 && ui->y->text().toDouble() > 0 && ui->zone->text().toDouble() > 0) {
-        qDebug() << ">>>>>>> Running utm2gcs <<<<<<<";
-        QPointF gcs;
+    if (ui->actionBatchConversion->isChecked()) {
 
-        // Configure UTM coordinates from GUI
-        UTMCoordinates utm;
+        // Perform a batch conversion
+        qDebug() << "Not implemented yet.";
 
-        // Set ellipsoid
-        if (ui->actionHayford->isChecked())
-            utm.setEllipsoid(QString("hayford"));
-        else if (ui->actionWGS84->isChecked())
-            utm.setEllipsoid(QString("wgs84"));
+    } else {
 
-        // Set coordinates
-        utm.setXY(ui->x->text().toDouble(), ui->y->text().toDouble());
-        utm.setZone(ui->zone->text().toInt());
-        utm.setHemisphere(ui->northern->isChecked());
+        // Perform a single coordinates conversion
 
-        // Perform conversion to GCS
-        gcs = utm.toGCS();
+        if (ui->x->text().toDouble() > 0 && ui->y->text().toDouble() > 0 && ui->zone->text().toDouble() > 0) {
+            qDebug() << ">>>>>>> Running utm2gcs <<<<<<<";
+            QPointF gcs;
 
-        // Set coordinates to GUI
-        ui->latitude->setText(QString::number(gcs.y(), 'f', 8));
-        ui->longitude->setText(QString::number(gcs.x(), 'f', 8));
+            // Configure UTM coordinates from GUI
+            UTMCoordinates utm;
+
+            // Set ellipsoid
+            if (ui->actionHayford->isChecked())
+                utm.setEllipsoid(QString("hayford"));
+            else if (ui->actionWGS84->isChecked())
+                utm.setEllipsoid(QString("wgs84"));
+
+            // Set coordinates
+            utm.setXY(ui->x->text().toDouble(), ui->y->text().toDouble());
+            utm.setZone(ui->zone->text().toInt());
+            utm.setHemisphere(ui->northern->isChecked());
+
+            // Perform conversion to GCS
+            gcs = utm.toGCS();
+
+            // Set coordinates to GUI
+            ui->latitude->setText(QString::number(gcs.y(), 'f', 8));
+            ui->longitude->setText(QString::number(gcs.x(), 'f', 8));
+        }
     }
 }
 
@@ -70,6 +89,9 @@ void MainWindow::gcs2utm()
      * Converts coordinates from Geographic Coordinate System to Universal Transverse Mercator *
      *                                                                                         *
      *******************************************************************************************/
+
+
+    // Perform a single coordinates conversion
 
     if (ui->longitude->text().toDouble() != 0 && ui->latitude->text().toDouble() != 0) {
         qDebug() << ">>>>>>> Running gcs2utm <<<<<<<";
@@ -130,7 +152,6 @@ void MainWindow::gcs2utm()
             ui->southern->setChecked(true);
         else
             ui->northern->setChecked(true);
-
     }
 }
 
@@ -180,6 +201,51 @@ QVector<double> MainWindow::coordFormatter(QString rawCoordinates)
     }
 
     return coord;
+}
+
+QString MainWindow::formatMessyCoordinates(QString rawCoordinates)
+{
+    /*****************************************************************************
+     *                                                                           *
+     * Format the coordinates to a strign format that can be handled more easily *
+     *                                                                           *
+     *****************************************************************************/
+
+    QString formattedCoordinates;
+
+    // Replace and remove some stuff
+    rawCoordinates.replace("`", "\'");
+    rawCoordinates.replace(QChar::fromLatin1('´'), '\'');
+    rawCoordinates.replace(QChar::fromLatin1('°'), ' ');
+    rawCoordinates.replace(QChar::fromLatin1('º'), ' ');
+    rawCoordinates.replace(QChar(148), ' ');
+    rawCoordinates.replace(QChar::fromLatin1('”'), ' ');
+    rawCoordinates.replace('_', ' ');
+//    rawCoordinates.replace(QString::fromLatin1("´"), "\'");
+//    rawCoordinates.replace(QString::fromLatin1("°"), " ");
+//    rawCoordinates.replace(QString::fromLatin1("º"), " ");
+    rawCoordinates.replace("\"", " ");
+    rawCoordinates.replace("\'", " ");
+    rawCoordinates.replace(",", " ");
+    rawCoordinates.replace("long.", " ", Qt::CaseInsensitive);
+    rawCoordinates.replace("lon.", " ", Qt::CaseInsensitive);
+    rawCoordinates.replace("lat.", " ", Qt::CaseInsensitive);
+    rawCoordinates.replace("n.", " ", Qt::CaseInsensitive);
+    rawCoordinates.replace("o.", " ", Qt::CaseInsensitive);
+    rawCoordinates.replace("\t", " ", Qt::CaseInsensitive);
+    //rawCoordinates.replace(QRegExp("[\s]{2}"), " ");
+
+    // Remove double spaces
+    for (int times = 0; times < 30; times++) {
+        rawCoordinates.replace(' ', " ");
+        rawCoordinates.replace("  ", " ");
+    }
+
+    rawCoordinates.remove(QRegExp("[a-zA-Z]"));
+    rawCoordinates.remove(QRegExp(QString::fromUtf8("[-~!@#$%^&*()_—+=|:;<>«»?/{}]")));
+    //rawCoordinates.remove(QRegExp(QString::fromUtf8("[-`~!@#$%^&*()_—+=|:;<>«»,.?/{}\'\"\\\[\\\]\\\\]")));
+    formattedCoordinates = rawCoordinates.trimmed();
+    return formattedCoordinates;
 }
 
 void MainWindow::about()
@@ -234,4 +300,116 @@ double MainWindow::sex2dec(QString sexagesimal)
     qDebug() << dd << "°" << mm << "'" << ss << "\'\' = " << degrees;
 
     return degrees;
+}
+
+double MainWindow::sex2dec(double dd, double mm, double ss)
+{
+    double degrees;
+
+    if (dd > 0)
+        degrees = dd + (mm / 60.0) + (ss / 3600.0);
+    else
+        degrees = dd - (mm / 60.0) - (ss / 3600.0);
+
+    qDebug() << dd << "°" << mm << "'" << ss << "\'\' = " << degrees;
+
+    return degrees;
+}
+
+void MainWindow::configureBatchConversion()
+{
+    if (ui->actionBatchConversion->isChecked()) {
+        ui->toUTM->hide();
+        ui->toGCS->hide();
+        ui->convertButton->show();
+
+        ui->geoCoordinates->show();
+        ui->utmCoordinates->show();
+
+        ui->groupDecimal->hide();
+        ui->groupSexagesimal->hide();
+        ui->label_3->hide();
+        ui->label_4->hide();
+        ui->label_5->hide();
+        ui->x->hide();
+        ui->y->hide();
+        ui->northern->hide();
+        ui->southern->hide();
+        ui->zone->hide();
+    } else {
+        ui->toGCS->show();
+        ui->toUTM->show();
+        ui->convertButton->hide();
+
+        ui->geoCoordinates->hide();
+        ui->utmCoordinates->hide();
+
+        ui->groupDecimal->show();
+        ui->groupSexagesimal->show();
+        ui->label_3->show();
+        ui->label_4->show();
+        ui->label_5->show();
+        ui->x->show();
+        ui->y->show();
+        ui->northern->show();
+        ui->southern->show();
+        ui->zone->hide();
+    }
+
+    this->adjustSize();
+}
+
+void MainWindow::batchConversionGCS()
+{
+    // Perform a batch conversion
+
+    qDebug() << "Performing a batch conversion from GCS to UTM";
+
+    QStringList coordinates;
+    QString text;
+
+    // Get the text in the field, and separate each line
+    QStringList textLines = ui->geoCoordinates->toPlainText().split("\n");
+
+    if (textLines.isEmpty())
+        return;
+
+    // Format each line
+    for (int i = 0; i < textLines.length(); i++) {
+        qDebug() << "Line:" << i << textLines.at(i);
+
+        // Format the coordinates
+        QString formattedCoordinates = formatMessyCoordinates(textLines.at(i));
+        QStringList coordinatesList = formattedCoordinates.split(" ");
+
+        qDebug() << "  -Elements:" << coordinatesList.size();
+
+        switch (coordinatesList.size()) {
+        case 6: {
+
+            double longitude;
+            double latitude;
+
+            // Get latitude
+            latitude = sex2dec(coordinatesList.at(0).toDouble(),
+                               coordinatesList.at(1).toDouble(),
+                               coordinatesList.at(2).toDouble());
+
+            longitude =  sex2dec(coordinatesList.at(3).toDouble(),
+                                 coordinatesList.at(4).toDouble(),
+                                 coordinatesList.at(5).toDouble());
+
+            formattedCoordinates.clear();
+            formattedCoordinates = QString::number(latitude, 'f', 6) +
+                    " " + QString::number(longitude, 'f', 6);
+        }
+            break;
+        default:
+            break;
+        }
+        coordinates.append(formattedCoordinates);
+    }
+
+    text = coordinates.join('\n');
+    ui->utmCoordinates->setText(text);
 }

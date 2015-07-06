@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>600</width>
-    <height>310</height>
+    <width>672</width>
+    <height>531</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -36,6 +36,9 @@
          <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Preferred</enum>
+         </property>
          <property name="sizeHint" stdset="0">
           <size>
            <width>20</width>
@@ -45,7 +48,7 @@
         </spacer>
        </item>
        <item>
-        <widget class="QGroupBox" name="groupBox_4">
+        <widget class="QGroupBox" name="groupSexagesimal">
          <property name="title">
           <string>Sexagesimal:</string>
          </property>
@@ -110,7 +113,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QGroupBox" name="groupBox_3">
+        <widget class="QGroupBox" name="groupDecimal">
          <property name="title">
           <string>Decimal:</string>
          </property>
@@ -193,9 +196,15 @@
         </widget>
        </item>
        <item>
+        <widget class="QTextEdit" name="geoCoordinates"/>
+       </item>
+       <item>
         <spacer name="verticalSpacer_3">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Preferred</enum>
          </property>
          <property name="sizeHint" stdset="0">
           <size>
@@ -256,6 +265,13 @@
        </widget>
       </item>
       <item>
+       <widget class="QPushButton" name="convertButton">
+        <property name="text">
+         <string>Convert</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <spacer name="verticalSpacer">
         <property name="orientation">
          <enum>Qt::Vertical</enum>
@@ -290,10 +306,13 @@
          <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Preferred</enum>
+         </property>
          <property name="sizeHint" stdset="0">
           <size>
            <width>20</width>
-           <height>40</height>
+           <height>20</height>
           </size>
          </property>
         </spacer>
@@ -422,14 +441,20 @@
         </widget>
        </item>
        <item>
+        <widget class="QTextEdit" name="utmCoordinates"/>
+       </item>
+       <item>
         <spacer name="verticalSpacer_5">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Preferred</enum>
+         </property>
          <property name="sizeHint" stdset="0">
           <size>
            <width>20</width>
-           <height>40</height>
+           <height>20</height>
           </size>
          </property>
         </spacer>
@@ -444,8 +469,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>600</width>
-     <height>19</height>
+     <width>672</width>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuTools">
@@ -464,6 +489,7 @@
      <addaction name="actionHayford"/>
     </widget>
     <addaction name="menu_Datum"/>
+    <addaction name="actionBatchConversion"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -501,6 +527,17 @@
    </property>
    <property name="text">
     <string>&amp;About</string>
+   </property>
+  </action>
+  <action name="actionBatchConversion">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Batch Conversion</string>
+   </property>
+   <property name="toolTip">
+    <string>Batch conversion of coordinates</string>
    </property>
   </action>
  </widget>

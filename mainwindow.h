@@ -31,11 +31,15 @@ private slots:
     void utm2gcs();
     void gcs2utm();
     QVector<double> coordFormatter(QString rawCoordinates);
+    QString formatMessyCoordinates(QString rawCoordinates);
     void about();
     void updateStatusBar();
     void lat2dec(QString sexagesimal);
     void lon2dec(QString sexagesimal);
     double sex2dec(QString sexagesimal);
+    double sex2dec(double dd, double mm, double ss);
+    void configureBatchConversion();
+    void batchConversionGCS();
 };
 
 #endif // MAINWINDOW_H
