@@ -207,7 +207,7 @@ QString MainWindow::formatMessyCoordinates(QString rawCoordinates)
 {
     /*****************************************************************************
      *                                                                           *
-     * Format the coordinates to a strign format that can be handled more easily *
+     * Format the coordinates to a string format that can be handled more easily *
      *                                                                           *
      *****************************************************************************/
 
