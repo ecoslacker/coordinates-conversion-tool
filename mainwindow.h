@@ -40,6 +40,7 @@ private slots:
     double sex2dec(double dd, double mm, double ss);
     void configureBatchConversion();
     void batchConversionGCS();
+    void batchConvertionUTM();
 };
 
 #endif // MAINWINDOW_H

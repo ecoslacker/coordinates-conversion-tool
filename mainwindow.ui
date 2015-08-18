@@ -265,9 +265,16 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="convertButton">
+       <widget class="QPushButton" name="convertGCSButton">
         <property name="text">
-         <string>Convert</string>
+         <string>Convert to UTM</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="convertUTMButton">
+        <property name="text">
+         <string>Convert to GCS</string>
         </property>
        </widget>
       </item>
@@ -470,7 +477,7 @@
      <x>0</x>
      <y>0</y>
      <width>672</width>
-     <height>20</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuTools">

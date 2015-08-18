@@ -10,7 +10,8 @@ MainWindow::MainWindow(QWidget *parent) :
     // Hide the text edit widgets from batch conversion
     ui->geoCoordinates->hide();
     ui->utmCoordinates->hide();
-    ui->convertButton->hide();
+    ui->convertUTMButton->hide();
+    ui->convertGCSButton->hide();
 
     this->adjustSize();
 
@@ -27,7 +28,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->latitudeSexsagecimal, SIGNAL(textChanged(QString)), SLOT(lat2dec(QString)));
     connect(ui->longitudeSexagecimal, SIGNAL(textChanged(QString)), SLOT(lon2dec(QString)));
     connect(ui->actionBatchConversion, SIGNAL(triggered(bool)), SLOT(configureBatchConversion()));
-    connect(ui->convertButton, SIGNAL(clicked(bool)), SLOT(batchConversionGCS()));
+    connect(ui->convertGCSButton, SIGNAL(clicked(bool)), SLOT(batchConversionGCS()));
+    connect(ui->convertUTMButton, SIGNAL(clicked(bool)), SLOT(batchConvertionUTM()));
 
     ui->actionWGS84->setChecked(true);
 }
@@ -321,7 +323,8 @@ void MainWindow::configureBatchConversion()
     if (ui->actionBatchConversion->isChecked()) {
         ui->toUTM->hide();
         ui->toGCS->hide();
-        ui->convertButton->show();
+        ui->convertUTMButton->show();
+        ui->convertGCSButton->show();
 
         ui->geoCoordinates->show();
         ui->utmCoordinates->show();
@@ -339,7 +342,8 @@ void MainWindow::configureBatchConversion()
     } else {
         ui->toGCS->show();
         ui->toUTM->show();
-        ui->convertButton->hide();
+        ui->convertUTMButton->hide();
+        ui->convertGCSButton->hide();
 
         ui->geoCoordinates->hide();
         ui->utmCoordinates->hide();
@@ -361,7 +365,11 @@ void MainWindow::configureBatchConversion()
 
 void MainWindow::batchConversionGCS()
 {
-    // Perform a batch conversion
+    /********************************************************
+     *                                                      *
+     *  Performs a batch conversion from GCS to UTM         *
+     *                                                      *
+     ********************************************************/
 
     qDebug() << "Performing a batch conversion from GCS to UTM";
 
@@ -408,6 +416,74 @@ void MainWindow::batchConversionGCS()
             break;
         }
         coordinates.append(formattedCoordinates);
+    }
+
+    text = coordinates.join('\n');
+    ui->utmCoordinates->setText(text);
+}
+
+void MainWindow::batchConvertionUTM()
+{
+    /**************************************************
+     *                                                *
+     * Performs a bath conversion from UTM to GCS     *
+     *                                                *
+     **************************************************/
+
+    qDebug() << "Performing a batch converion from UTM to GCS";
+
+    QStringList coordinates;
+    QString text;
+
+    // Get the text in the field, and separate each line
+    QStringList textLines = ui->geoCoordinates->toPlainText().split("\n");
+
+    if (textLines.isEmpty())
+        return;
+
+    // Format each line
+    for (int i = 0; i < textLines.length(); i++) {
+        qDebug() << "Line:" << i << textLines.at(i);
+
+        QPointF gcs;
+
+        // Format the coordinates
+        //QString formattedCoordinates = formatMessyCoordinates(textLines.at(i));
+        //QStringList coordinatesList = formattedCoordinates.split("\t");
+        QString line;
+        QStringList coordinatesList = textLines.at(i).split("\t");
+
+        qDebug() << "  -Elements:" << coordinatesList.size();
+
+        switch (coordinatesList.size()) {
+        case 3: {
+
+            // Configure UTM coordinates from GUI
+            UTMCoordinates utm;
+
+            // Set ellipsoid
+            if (ui->actionHayford->isChecked())
+                utm.setEllipsoid(QString("hayford"));
+            else if (ui->actionWGS84->isChecked())
+                utm.setEllipsoid(QString("wgs84"));
+
+            // Set coordinates
+            utm.setXY(coordinatesList.at(0).toDouble(), coordinatesList.at(1).toDouble());
+            utm.setZone(coordinatesList.at(2).toInt());
+            utm.setHemisphere(true);
+
+            // Perform conversion to GCS
+            gcs = utm.toGCS();
+
+            line.clear();
+            line = QString::number(gcs.x(), 'f', 6) + " " + QString::number(gcs.y(), 'f', 6);
+
+        }
+            break;
+        default:
+            break;
+        }
+        coordinates.append(line);
     }
 
     text = coordinates.join('\n');
