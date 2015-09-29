@@ -20,6 +20,11 @@ MainWindow::MainWindow(QWidget *parent) :
     datumGroup->addAction(ui->actionHayford);
     datumGroup->addAction(ui->actionWGS84);
 
+    delimiterGroup = new QActionGroup(this);
+    delimiterGroup->addAction(ui->actionComma);
+    delimiterGroup->addAction(ui->actionSpace);
+    delimiterGroup->addAction(ui->actionTab);
+
     connect(ui->toGCS, SIGNAL(clicked()), SLOT(utm2gcs()));
     connect(ui->toUTM, SIGNAL(clicked()), SLOT(gcs2utm()));
     connect(ui->actionAbout, SIGNAL(triggered()), SLOT(about()));
@@ -32,6 +37,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->convertUTMButton, SIGNAL(clicked(bool)), SLOT(batchConvertionUTM()));
 
     ui->actionWGS84->setChecked(true);
+    ui->actionComma->setChecked(true);
+    setDelimiter();
 }
 
 MainWindow::~MainWindow()
@@ -244,7 +251,7 @@ QString MainWindow::formatMessyCoordinates(QString rawCoordinates)
     }
 
     rawCoordinates.remove(QRegExp("[a-zA-Z]"));
-    rawCoordinates.remove(QRegExp(QString::fromUtf8("[-~!@#$%^&*()_—+=|:;<>«»?/{}]")));
+    rawCoordinates.remove(QRegExp(QString::fromUtf8("[~!@#$%^&*()_—+=|:;<>«»?/{}]")));
     //rawCoordinates.remove(QRegExp(QString::fromUtf8("[-`~!@#$%^&*()_—+=|:;<>«»,.?/{}\'\"\\\[\\\]\\\\]")));
     formattedCoordinates = rawCoordinates.trimmed();
     return formattedCoordinates;
@@ -357,7 +364,7 @@ void MainWindow::configureBatchConversion()
         ui->y->show();
         ui->northern->show();
         ui->southern->show();
-        ui->zone->hide();
+        ui->zone->show();
     }
 
     this->adjustSize();
@@ -386,6 +393,8 @@ void MainWindow::batchConversionGCS()
     for (int i = 0; i < textLines.length(); i++) {
         qDebug() << "Line:" << i << textLines.at(i);
 
+        QVector<double> utm;
+
         // Format the coordinates
         QString formattedCoordinates = formatMessyCoordinates(textLines.at(i));
         QStringList coordinatesList = formattedCoordinates.split(" ");
@@ -393,29 +402,117 @@ void MainWindow::batchConversionGCS()
         qDebug() << "  -Elements:" << coordinatesList.size();
 
         switch (coordinatesList.size()) {
+        case 1: {
+            continue;
+        }
+            break;
+        case 2: {
+            double longitude;
+            double latitude;
+
+            longitude = coordinatesList.at(0).toDouble();
+            latitude = coordinatesList.at(1).toDouble();
+
+            GCSCoordinates gcs;
+            gcs.setLatitude(latitude);
+            gcs.setLongitude(longitude);
+
+            gcs.setWestern(true);
+
+            // Set ellipsoid
+            if (ui->actionHayford->isChecked())
+                gcs.setEllipsoid(QString("hayford"));
+            else if (ui->actionWGS84->isChecked())
+                gcs.setEllipsoid(QString("wgs84"));
+
+            // Perform conversion to UTM
+            utm = gcs.toUTM();
+
+        }
+            break;
+        case 3: {
+            continue;
+        }
+            break;
+        case 4: {
+            double longitude;
+            double latitude;
+
+            // Get latitude
+            longitude = sex2dec(coordinatesList.at(0).toDouble(),
+                               coordinatesList.at(1).toDouble(),
+                               0);
+
+            // Get longitude
+            latitude =  sex2dec(coordinatesList.at(2).toDouble(),
+                                 coordinatesList.at(3).toDouble(),
+                                 0);
+
+            formattedCoordinates.clear();
+            formattedCoordinates = QString::number(latitude, 'f', 6) +
+                    " " + QString::number(longitude, 'f', 6);
+
+            GCSCoordinates gcs;
+            gcs.setLatitude(latitude);
+            gcs.setLongitude(longitude);
+
+            gcs.setWestern(true);
+
+            // Set ellipsoid
+            if (ui->actionHayford->isChecked())
+                gcs.setEllipsoid(QString("hayford"));
+            else if (ui->actionWGS84->isChecked())
+                gcs.setEllipsoid(QString("wgs84"));
+
+            // Perform conversion to UTM
+            utm = gcs.toUTM();
+        }
+            break;
+        case 5: {
+            continue;
+        }
+            break;
         case 6: {
 
             double longitude;
             double latitude;
 
             // Get latitude
-            latitude = sex2dec(coordinatesList.at(0).toDouble(),
+            longitude = sex2dec(coordinatesList.at(0).toDouble(),
                                coordinatesList.at(1).toDouble(),
                                coordinatesList.at(2).toDouble());
 
-            longitude =  sex2dec(coordinatesList.at(3).toDouble(),
+            // Get longitude
+            latitude =  sex2dec(coordinatesList.at(3).toDouble(),
                                  coordinatesList.at(4).toDouble(),
                                  coordinatesList.at(5).toDouble());
 
             formattedCoordinates.clear();
             formattedCoordinates = QString::number(latitude, 'f', 6) +
                     " " + QString::number(longitude, 'f', 6);
+
+            GCSCoordinates gcs;
+            gcs.setLatitude(latitude);
+            gcs.setLongitude(longitude);
+
+            gcs.setWestern(true);
+
+            // Set ellipsoid
+            if (ui->actionHayford->isChecked())
+                gcs.setEllipsoid(QString("hayford"));
+            else if (ui->actionWGS84->isChecked())
+                gcs.setEllipsoid(QString("wgs84"));
+
+            // Perform conversion to UTM
+            utm = gcs.toUTM();
         }
             break;
         default:
             break;
         }
-        coordinates.append(formattedCoordinates);
+        coordinates.append(QString::number(utm.at(0), 'f', 6) + " " +
+                           QString::number(utm.at(1), 'f', 6) + " " +
+                           QString::number(utm.at(2)));
     }
 
     text = coordinates.join('\n');
@@ -488,4 +585,14 @@ void MainWindow::batchConvertionUTM()
 
     text = coordinates.join('\n');
     ui->utmCoordinates->setText(text);
+}
+
+void MainWindow::setDelimiter()
+{
+    if (ui->actionComma->isChecked())
+        delimiter = ",";
+    else if (ui->actionSpace->isChecked())
+        delimiter = " ";
+    else if (ui->actionTab->isChecked())
+        delimiter = "\t";
 }

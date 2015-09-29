@@ -26,6 +26,8 @@ public:
 private:
     Ui::MainWindow *ui;
     QActionGroup *datumGroup;
+    QActionGroup *delimiterGroup;
+    QString delimiter;
 
 private slots:
     void utm2gcs();
@@ -41,6 +43,7 @@ private slots:
     void configureBatchConversion();
     void batchConversionGCS();
     void batchConvertionUTM();
+    void setDelimiter();
 };
 
 #endif // MAINWINDOW_H

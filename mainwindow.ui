@@ -196,7 +196,57 @@
         </widget>
        </item>
        <item>
-        <widget class="QTextEdit" name="geoCoordinates"/>
+        <widget class="QScrollArea" name="scrollArea">
+         <property name="frameShape">
+          <enum>QFrame::NoFrame</enum>
+         </property>
+         <property name="lineWidth">
+          <number>0</number>
+         </property>
+         <property name="widgetResizable">
+          <bool>true</bool>
+         </property>
+         <widget class="QWidget" name="scrollAreaWidgetContents">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>258</width>
+            <height>213</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_6">
+           <property name="spacing">
+            <number>0</number>
+           </property>
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QTextEdit" name="geoCoordinates">
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <property name="lineWidth">
+              <number>0</number>
+             </property>
+             <property name="lineWrapMode">
+              <enum>QTextEdit::NoWrap</enum>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </widget>
        </item>
        <item>
         <spacer name="verticalSpacer_3">
@@ -448,7 +498,51 @@
         </widget>
        </item>
        <item>
-        <widget class="QTextEdit" name="utmCoordinates"/>
+        <widget class="QScrollArea" name="scrollArea_2">
+         <property name="frameShape">
+          <enum>QFrame::NoFrame</enum>
+         </property>
+         <property name="lineWidth">
+          <number>0</number>
+         </property>
+         <property name="widgetResizable">
+          <bool>true</bool>
+         </property>
+         <widget class="QWidget" name="scrollAreaWidgetContents_2">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>258</width>
+            <height>261</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_7">
+           <property name="spacing">
+            <number>0</number>
+           </property>
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QTextEdit" name="utmCoordinates">
+             <property name="lineWrapMode">
+              <enum>QTextEdit::NoWrap</enum>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </widget>
        </item>
        <item>
         <spacer name="verticalSpacer_5">
@@ -495,8 +589,17 @@
      <addaction name="actionWGS84"/>
      <addaction name="actionHayford"/>
     </widget>
+    <widget class="QMenu" name="menuDelimiter">
+     <property name="title">
+      <string>Delimiter</string>
+     </property>
+     <addaction name="actionComma"/>
+     <addaction name="actionSpace"/>
+     <addaction name="actionTab"/>
+    </widget>
     <addaction name="menu_Datum"/>
     <addaction name="actionBatchConversion"/>
+    <addaction name="menuDelimiter"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -545,6 +648,30 @@
    </property>
    <property name="toolTip">
     <string>Batch conversion of coordinates</string>
+   </property>
+  </action>
+  <action name="actionComma">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Comma</string>
+   </property>
+  </action>
+  <action name="actionSpace">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Space</string>
+   </property>
+  </action>
+  <action name="actionTab">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Tab</string>
    </property>
   </action>
  </widget>
