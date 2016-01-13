@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Coordinates Conversion Simple Tool</string>
+   <string>Coordinates Conversion Tool</string>
   </property>
   <property name="windowIcon">
    <iconset resource="icons.qrc">
@@ -212,7 +212,7 @@
             <x>0</x>
             <y>0</y>
             <width>258</width>
-            <height>213</height>
+            <height>214</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -310,21 +310,21 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>&lt;- to GCS</string>
+         <string>&lt;- to Geo</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="convertGCSButton">
+       <widget class="QPushButton" name="convertGCStoUTMButton">
         <property name="text">
          <string>Convert to UTM</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="convertUTMButton">
+       <widget class="QPushButton" name="convertUTMtoGCSButton">
         <property name="text">
-         <string>Convert to GCS</string>
+         <string>Convert to Geo</string>
         </property>
        </widget>
       </item>
@@ -514,7 +514,7 @@
             <x>0</x>
             <y>0</y>
             <width>258</width>
-            <height>261</height>
+            <height>262</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_7">
@@ -571,7 +571,7 @@
      <x>0</x>
      <y>0</y>
      <width>672</width>
-     <height>21</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuTools">
@@ -593,9 +593,9 @@
      <property name="title">
       <string>Delimiter</string>
      </property>
+     <addaction name="actionTab"/>
      <addaction name="actionComma"/>
      <addaction name="actionSpace"/>
-     <addaction name="actionTab"/>
     </widget>
     <addaction name="menu_Datum"/>
     <addaction name="actionBatchConversion"/>
