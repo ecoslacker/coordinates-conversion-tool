@@ -6,6 +6,7 @@
 #include <QString>
 #include <QStringList>
 #include <QActionGroup>
+#include <QMessageBox>
 
 #include "utmcoordinates.h"
 #include "gcscoordinates.h"
@@ -27,7 +28,6 @@ private:
     Ui::MainWindow *ui;
     QActionGroup *datumGroup;
     QActionGroup *delimiterGroup;
-    QString delimiter;
 
 private slots:
     void utm2gcs();
@@ -41,9 +41,10 @@ private slots:
     double sex2dec(QString sexagesimal);
     double sex2dec(double dd, double mm, double ss);
     void configureBatchConversion();
-    void batchConversionGCS();
-    void batchConvertionUTM();
-    void setDelimiter();
+    void batchConversionGCStoUTM();
+    void batchConvertionUTMtoGCS();
+    QString setDelimiter();
+    void textFormatError();
 };
 
 #endif // MAINWINDOW_H

@@ -10,8 +10,8 @@ MainWindow::MainWindow(QWidget *parent) :
     // Hide the text edit widgets from batch conversion
     ui->geoCoordinates->hide();
     ui->utmCoordinates->hide();
-    ui->convertUTMButton->hide();
-    ui->convertGCSButton->hide();
+    ui->convertUTMtoGCSButton->hide();
+    ui->convertGCStoUTMButton->hide();
 
     this->adjustSize();
 
@@ -33,12 +33,11 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->latitudeSexsagecimal, SIGNAL(textChanged(QString)), SLOT(lat2dec(QString)));
     connect(ui->longitudeSexagecimal, SIGNAL(textChanged(QString)), SLOT(lon2dec(QString)));
     connect(ui->actionBatchConversion, SIGNAL(triggered(bool)), SLOT(configureBatchConversion()));
-    connect(ui->convertGCSButton, SIGNAL(clicked(bool)), SLOT(batchConversionGCS()));
-    connect(ui->convertUTMButton, SIGNAL(clicked(bool)), SLOT(batchConvertionUTM()));
+    connect(ui->convertGCStoUTMButton, SIGNAL(clicked(bool)), SLOT(batchConversionGCStoUTM()));
+    connect(ui->convertUTMtoGCSButton, SIGNAL(clicked(bool)), SLOT(batchConvertionUTMtoGCS()));
 
     ui->actionWGS84->setChecked(true);
-    ui->actionComma->setChecked(true);
-    setDelimiter();
+    ui->actionTab->setChecked(true);
 }
 
 MainWindow::~MainWindow()
@@ -235,13 +234,13 @@ QString MainWindow::formatMessyCoordinates(QString rawCoordinates)
 //    rawCoordinates.replace(QString::fromLatin1("º"), " ");
     rawCoordinates.replace("\"", " ");
     rawCoordinates.replace("\'", " ");
-    rawCoordinates.replace(",", " ");
+    //rawCoordinates.replace(",", " "); // WARNING! Should not delete commas, could be an user selected separator
     rawCoordinates.replace("long.", " ", Qt::CaseInsensitive);
     rawCoordinates.replace("lon.", " ", Qt::CaseInsensitive);
     rawCoordinates.replace("lat.", " ", Qt::CaseInsensitive);
     rawCoordinates.replace("n.", " ", Qt::CaseInsensitive);
     rawCoordinates.replace("o.", " ", Qt::CaseInsensitive);
-    rawCoordinates.replace("\t", " ", Qt::CaseInsensitive);
+//    rawCoordinates.replace("\t", " ", Qt::CaseInsensitive); // WARNING! Should not delete tabs, could be an user selected separator
     //rawCoordinates.replace(QRegExp("[\s]{2}"), " ");
 
     // Remove double spaces
@@ -328,10 +327,12 @@ double MainWindow::sex2dec(double dd, double mm, double ss)
 void MainWindow::configureBatchConversion()
 {
     if (ui->actionBatchConversion->isChecked()) {
+        ui->groupBox->setTitle("Input Coordinates");
+        ui->groupBox_2->setTitle("Output Coordinates");
         ui->toUTM->hide();
         ui->toGCS->hide();
-        ui->convertUTMButton->show();
-        ui->convertGCSButton->show();
+        ui->convertUTMtoGCSButton->show();
+        ui->convertGCStoUTMButton->show();
 
         ui->geoCoordinates->show();
         ui->utmCoordinates->show();
@@ -347,10 +348,12 @@ void MainWindow::configureBatchConversion()
         ui->southern->hide();
         ui->zone->hide();
     } else {
+        ui->groupBox->setTitle("Geographic Coordinates");
+        ui->groupBox->setTitle("UTM Coordinates");
         ui->toGCS->show();
         ui->toUTM->show();
-        ui->convertUTMButton->hide();
-        ui->convertGCSButton->hide();
+        ui->convertUTMtoGCSButton->hide();
+        ui->convertGCStoUTMButton->hide();
 
         ui->geoCoordinates->hide();
         ui->utmCoordinates->hide();
@@ -370,7 +373,7 @@ void MainWindow::configureBatchConversion()
     this->adjustSize();
 }
 
-void MainWindow::batchConversionGCS()
+void MainWindow::batchConversionGCStoUTM()
 {
     /********************************************************
      *                                                      *
@@ -379,6 +382,9 @@ void MainWindow::batchConversionGCS()
      ********************************************************/
 
     qDebug() << "Performing a batch conversion from GCS to UTM";
+
+    // Define coordinates delimiter or separator
+    QString delimiter = setDelimiter();
 
     QStringList coordinates;
     QString text;
@@ -397,7 +403,7 @@ void MainWindow::batchConversionGCS()
 
         // Format the coordinates
         QString formattedCoordinates = formatMessyCoordinates(textLines.at(i));
-        QStringList coordinatesList = formattedCoordinates.split(" ");
+        QStringList coordinatesList = formattedCoordinates.split(delimiter);
 
         qDebug() << "  -Elements:" << coordinatesList.size();
 
@@ -510,8 +516,8 @@ void MainWindow::batchConversionGCS()
         default:
             break;
         }
-        coordinates.append(QString::number(utm.at(0), 'f', 6) + " " +
-                           QString::number(utm.at(1), 'f', 6) + " " +
+        coordinates.append(QString::number(utm.at(0), 'f', 6) + delimiter +
+                           QString::number(utm.at(1), 'f', 6) + delimiter +
                            QString::number(utm.at(2)));
     }
 
@@ -519,7 +525,7 @@ void MainWindow::batchConversionGCS()
     ui->utmCoordinates->setText(text);
 }
 
-void MainWindow::batchConvertionUTM()
+void MainWindow::batchConvertionUTMtoGCS()
 {
     /**************************************************
      *                                                *
@@ -528,6 +534,9 @@ void MainWindow::batchConvertionUTM()
      **************************************************/
 
     qDebug() << "Performing a batch converion from UTM to GCS";
+
+    // Define coordinates delimiter or separator
+    QString delimiter = setDelimiter();
 
     QStringList coordinates;
     QString text;
@@ -548,11 +557,19 @@ void MainWindow::batchConvertionUTM()
         //QString formattedCoordinates = formatMessyCoordinates(textLines.at(i));
         //QStringList coordinatesList = formattedCoordinates.split("\t");
         QString line;
-        QStringList coordinatesList = textLines.at(i).split("\t");
+        QStringList coordinatesList = textLines.at(i).split(delimiter);
 
         qDebug() << "  -Elements:" << coordinatesList.size();
 
         switch (coordinatesList.size()) {
+        case 1: {
+            textFormatError();
+        }
+            break;
+        case 2: {
+            textFormatError();
+        }
+            break;
         case 3: {
 
             // Configure UTM coordinates from GUI
@@ -573,11 +590,13 @@ void MainWindow::batchConvertionUTM()
             gcs = utm.toGCS();
 
             line.clear();
-            line = QString::number(gcs.x(), 'f', 6) + " " + QString::number(gcs.y(), 'f', 6);
+            line = QString::number(gcs.x(), 'f', 6) + delimiter + QString::number(gcs.y(), 'f', 6);
 
         }
             break;
-        default:
+        default: {
+            textFormatError();
+        }
             break;
         }
         coordinates.append(line);
@@ -587,12 +606,24 @@ void MainWindow::batchConvertionUTM()
     ui->utmCoordinates->setText(text);
 }
 
-void MainWindow::setDelimiter()
+QString MainWindow::setDelimiter()
 {
-    if (ui->actionComma->isChecked())
+    QString delimiter;
+    if (ui->actionComma->isChecked()) {
         delimiter = ",";
-    else if (ui->actionSpace->isChecked())
+        qDebug() << "  Selected delimiter is comma.";
+    } else if (ui->actionSpace->isChecked()) {
         delimiter = " ";
-    else if (ui->actionTab->isChecked())
+        qDebug() << "  Selected delimiter is space.";
+    } else if (ui->actionTab->isChecked()) {
         delimiter = "\t";
+        qDebug() << "  Selected delimiter is tabulator.";
+    }
+
+    return delimiter;
+}
+
+void MainWindow::textFormatError()
+{
+    ui->statusBar->showMessage("Errors found! Maybe bad delimiter or incomplete coordinates.");
 }
