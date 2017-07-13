@@ -1,3 +1,24 @@
+/*
+ * Coordinates
+ * Conversion between geographic coordinates (LatLon) and UTM projection
+ * Copyright (C) 2014-2017 Eduardo Jiménez <ecoslacker@irriapps.com>
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 2 of the License, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 59Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ *
+ */
+
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
@@ -7,13 +28,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    // Hide the text edit widgets from batch conversion
-    ui->geoCoordinates->hide();
-    ui->utmCoordinates->hide();
-    ui->convertUTMtoGCSButton->hide();
-    ui->convertGCStoUTMButton->hide();
-
-    this->adjustSize();
+    //this->adjustSize();
 
     // By creating an action group the items become auto exclusive, only one can be checked
     datumGroup = new QActionGroup(this);
@@ -25,19 +40,20 @@ MainWindow::MainWindow(QWidget *parent) :
     delimiterGroup->addAction(ui->actionSpace);
     delimiterGroup->addAction(ui->actionTab);
 
-    connect(ui->toGCS, SIGNAL(clicked()), SLOT(utm2gcs()));
-    connect(ui->toUTM, SIGNAL(clicked()), SLOT(gcs2utm()));
-    connect(ui->actionAbout, SIGNAL(triggered()), SLOT(about()));
-    connect(ui->actionHayford, SIGNAL(triggered()), SLOT(updateStatusBar()));
-    connect(ui->actionWGS84, SIGNAL(triggered()), SLOT(updateStatusBar()));
-    connect(ui->latitudeSexsagecimal, SIGNAL(textChanged(QString)), SLOT(lat2dec(QString)));
-    connect(ui->longitudeSexagecimal, SIGNAL(textChanged(QString)), SLOT(lon2dec(QString)));
-    connect(ui->actionBatchConversion, SIGNAL(triggered(bool)), SLOT(configureBatchConversion()));
-    connect(ui->convertGCStoUTMButton, SIGNAL(clicked(bool)), SLOT(batchConversionGCStoUTM()));
-    connect(ui->convertUTMtoGCSButton, SIGNAL(clicked(bool)), SLOT(batchConvertionUTMtoGCS()));
+    connect(ui->actionComma,       SIGNAL(triggered(bool)), SLOT(setDelimiter()));
+    connect(ui->actionTab,         SIGNAL(triggered(bool)), SLOT(setDelimiter()));
+    connect(ui->actionSpace,       SIGNAL(triggered(bool)), SLOT(setDelimiter()));
+    connect(ui->convert,           SIGNAL(clicked()),   SLOT(conversion()));
+    connect(ui->actionAbout,       SIGNAL(triggered()), SLOT(about()));
+    connect(ui->actionHayford,     SIGNAL(triggered()), SLOT(updateStatusBar()));
+    connect(ui->actionWGS84,       SIGNAL(triggered()), SLOT(updateStatusBar()));
+    connect(ui->actionOpenFile,    SIGNAL(triggered()), SLOT(openCsvFile()));
+    connect(ui->actionSaveResults, SIGNAL(triggered()), SLOT(saveCsvFile()));
 
     ui->actionWGS84->setChecked(true);
-    ui->actionTab->setChecked(true);
+    ui->actionComma->setChecked(true);
+
+    delimiter = ',';
 }
 
 MainWindow::~MainWindow()
@@ -45,28 +61,141 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::utm2gcs()
+void MainWindow::about()
+{
+    AboutDialog aboutDlg;
+    aboutDlg.exec();
+}
+
+void MainWindow::conversion()
+{
+    QString content = ui->inputText->toPlainText();
+    QStringList inputText = content.split('\n');
+
+    QString result;
+
+    if (ui->toUtm->isChecked()) {
+        if (ui->ddmmss->isChecked()) {
+            // Convert from LatLon to UTM (input uses DDMMSS format)
+            result = dms2dec(inputText);
+            ui->outputText->setPlainText(result);
+            // ********* TODO: CONTINUE TO UTM !!! ********
+
+        } else {
+            // Convert from LatLon to UTM (input uses decimal format)
+            result = gcs2utm(inputText);
+            ui->outputText->setPlainText(result);
+        }
+    } else {
+        if (ui->ddmmss->isChecked()) {
+            // Convert from LatLon (input uses DDMMSS format) to LatLon (output in decimal format)
+            result = dms2dec(inputText);
+            ui->outputText->setPlainText(result);
+        } else {
+            // Convert from UTM to LatLon (output in decimal format)
+            result = utm2gcs(inputText);
+            ui->outputText->setPlainText(result);
+        }
+    }
+}
+
+bool MainWindow::openCsvFile()
+{
+    QString fileName;
+    QString text;
+    QList<QStringList> data;
+
+    fileName = QFileDialog::getOpenFileName(this, tr("Open CSV File"), QDir::homePath(), tr("CSV Files (*.csv)"));
+    qDebug() << "Opening file:" << fileName;
+
+    // Check file actually exists
+    QFileInfo testFile(fileName);
+    if (!testFile.exists())
+        return false;
+
+    // Read points
+    data = CSV::parseFromFile(fileName, "UTF-8");
+    qDebug() << "Data length: " << data.length();
+
+    // Get the text from file
+    for (int i=0; i < data.length(); i++) {
+        QStringList line = data.at(i);
+        QString textLine = line.join(delimiter);
+        text.append(textLine);
+        text.append("\n");
+
+        qDebug() << " Line " << i << ": " << textLine;
+    }
+
+    // Set the text to the input widget
+    ui->inputText->clear();
+    ui->inputText->setPlainText(text);
+    return true;
+}
+
+bool MainWindow::saveCsvFile()
+{
+    QString fileName;
+    QStringList text;
+    QList<QStringList> data;
+    int replace = true;
+
+    fileName = QFileDialog::getSaveFileName(this, tr("Save CSV file"), QDir::homePath(), tr("CSV Files (*.csv)"));
+    qDebug() << "Saving file:" << fileName;
+
+    // Check file actually exists
+    QFileInfo testFile(fileName);
+    if (testFile.exists()) {
+        QMessageBox msgBox;
+        msgBox.setText(tr("The document already exists."));
+        msgBox.setInformativeText(tr("Do you want to replace it?"));
+        msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Cancel);
+        msgBox.setDefaultButton(QMessageBox::Save);
+        replace = msgBox.exec();
+    }
+
+    if (replace == false) {
+        qDebug() << "Exiting without replacing file: " << fileName;
+        return false;
+    }
+
+    // Creating data
+    text = ui->outputText->toPlainText().split("\n");
+    qDebug() << "Lines:" << text.length();
+
+    for (int i=0; i < text.length(); i++) {
+        if (!text.at(i).isEmpty()) {
+            QStringList elements;
+            qDebug() << "Line " << i << " :" << text.at(i);
+            elements = text.at(i).split(delimiter);
+            data.append(elements);
+        }
+    }
+
+    // Write CSV file
+    CSV::write(data, fileName, "UTF-8");
+
+    return true;
+}
+
+QString MainWindow::utm2gcs(QStringList inputText) const
 {
     /*******************************************************************************************
      *                                                                                         *
      * Converts coordinates from Universal Transverse Mercator to Geographic Coordinate System *
      *                                                                                         *
      *******************************************************************************************/
+    QString result;
+    QPointF gcs;
+    int i{1};
+    foreach (QString line, inputText) {
+        // Check the line
+        if (!line.isEmpty()) {
+            QString gcs_line;
+            double coord_x = line.split(',').at(0).toDouble();
+            double coord_y = line.split(',').at(1).toDouble();
+            double utm_zone = line.split(',').at(2).toInt();
 
-    if (ui->actionBatchConversion->isChecked()) {
-
-        // Perform a batch conversion
-        qDebug() << "Not implemented yet.";
-
-    } else {
-
-        // Perform a single coordinates conversion
-
-        if (ui->x->text().toDouble() > 0 && ui->y->text().toDouble() > 0 && ui->zone->text().toDouble() > 0) {
-            qDebug() << ">>>>>>> Running utm2gcs <<<<<<<";
-            QPointF gcs;
-
-            // Configure UTM coordinates from GUI
             UTMCoordinates utm;
 
             // Set ellipsoid
@@ -76,142 +205,151 @@ void MainWindow::utm2gcs()
                 utm.setEllipsoid(QString("wgs84"));
 
             // Set coordinates
-            utm.setXY(ui->x->text().toDouble(), ui->y->text().toDouble());
-            utm.setZone(ui->zone->text().toInt());
-            utm.setHemisphere(ui->northern->isChecked());
+            utm.setXY(coord_x, coord_y);
+            utm.setZone(utm_zone);
+            utm.setHemisphere(true); // WARNING: This suppose Northern
 
             // Perform conversion to GCS
             gcs = utm.toGCS();
 
-            // Set coordinates to GUI
-            ui->latitude->setText(QString::number(gcs.y(), 'f', 8));
-            ui->longitude->setText(QString::number(gcs.x(), 'f', 8));
+            gcs_line = QString::number(gcs.x(), 'f', 8) + ", " + QString::number(gcs.y(), 'f', 8);
+            result.append(gcs_line + "\n");
+            i++;
+        } else {
+            qDebug() << "Error in line " << i << ": " << line;
         }
     }
+    return result;
 }
 
-void MainWindow::gcs2utm()
+QString MainWindow::gcs2utm(QStringList inputText) const
 {
     /*******************************************************************************************
      *                                                                                         *
      * Converts coordinates from Geographic Coordinate System to Universal Transverse Mercator *
      *                                                                                         *
      *******************************************************************************************/
+    QString result;
+    QVector<double> utm;
 
+    int i{1};
+    foreach (QString line, inputText) {
+        // Check the line
+        if (!line.isEmpty()) {
+            QString utm_line;
+            double coord_x = line.split(',').at(0).toDouble();
+            double coord_y = line.split(',').at(1).toDouble();
+            QString hemisphere = "N"; //WARNING: This suppose Northern
 
-    // Perform a single coordinates conversion
+            GCSCoordinates gcs;
+            gcs.setLongitude(coord_x);
+            gcs.setLatitude(coord_y);
 
-    if (ui->longitude->text().toDouble() != 0 && ui->latitude->text().toDouble() != 0) {
-        qDebug() << ">>>>>>> Running gcs2utm <<<<<<<";
-        QVector<double> utm;
-        QVector<double> lat;
-        QVector<double> lon;
-        QString textLat;
-        QString textLon;
+            // TODO: What happens if X = 0? And if Y = 0?
+            if (coord_x <= 0)
+                gcs.setWestern(true);
+            else
+                gcs.setWestern(false);
 
-        // Configure GCS coordinates from GUI
+            // Set ellipsoid
+            if (ui->actionHayford->isChecked())
+                gcs.setEllipsoid(QString("hayford"));
+            else if (ui->actionWGS84->isChecked())
+                gcs.setEllipsoid(QString("wgs84"));
 
-        textLat = ui->latitude->text();
-        textLon = ui->longitude->text();
+            // Perform conversion to UTM
+            utm = gcs.toUTM();
 
-        lat = coordFormatter(textLat);
-        lon = coordFormatter(textLon);
+            // Get converted coordinates
+            utm_line = QString::number(utm.at(0), 'f', 6) + ", " + QString::number(utm.at(1), 'f', 6) + ", " + QString::number(utm.at(2)) + ", " + hemisphere;
 
-        GCSCoordinates gcs;
-        // Set latitude
-        if (lat.size() == 3) {
-            gcs.setLatitude(lat.at(0), lat.at(1), lat.at(2));
-        } else if (lat.size() == 2) {
-            gcs.setLatitude(lat.at(0), lat.at(1), 0);
-        } else if (lat.size() == 1) {
-            gcs.setLatitude(lat.at(0));
+            result.append(utm_line + "\n");
+            i++;
+        } else {
+            qDebug() << "Error in line " << i << ": " << line;
         }
-
-        // Set longitude
-        if (lon.size() == 3) {
-            gcs.setLongitude(lon.at(0), lon.at(1), lon.at(2));
-        } else if (lon.size() == 2) {
-            gcs.setLongitude(lon.at(0), lon.at(1), 0);
-        } else if (lon.size() == 1) {
-            gcs.setLongitude(lon.at(0));
-        }
-
-        if (lon.at(0) < 0)
-            gcs.setWestern(true);
-        else
-            gcs.setWestern(false);
-
-        // Set ellipsoid
-        if (ui->actionHayford->isChecked())
-            gcs.setEllipsoid(QString("hayford"));
-        else if (ui->actionWGS84->isChecked())
-            gcs.setEllipsoid(QString("wgs84"));
-
-        // Perform conversion to UTM
-        utm = gcs.toUTM();
-
-        // Set coordinates to GUI
-        ui->x->setText(QString::number(utm.at(0), 'f', 6));
-        ui->y->setText(QString::number(utm.at(1), 'f', 6));
-        ui->zone->setText(QString::number(utm.at(2)));
-
-        // Set hemisphere
-        if (lat.at(0) < 0)
-            ui->southern->setChecked(true);
-        else
-            ui->northern->setChecked(true);
     }
+    return result;
 }
 
-QVector<double> MainWindow::coordFormatter(QString rawCoordinates)
+QString MainWindow::dms2dec(QStringList inputText) const
 {
-    /**********************************************************************************
-     *                                                                                *
-     * Format the coordinates from a string (space separated) to a vector of doubles. *
-     *                                                                                *
-     **********************************************************************************/
+    QString result;
 
-    QVector<double> coord;
-    QStringList formatedCoordinate;
+    int i{1};
+    foreach (QString line, inputText) {
+        if (!line.isEmpty()) {
+            qDebug() << "Line " << i << ": " << line;
+            double x;
+            double y;
+            QString decLine;
+            QString coord_x = line.split(',').at(0);
+            QString coord_y = line.split(',').at(1);
 
-    formatedCoordinate = rawCoordinates.split(" ");
+            qDebug() << "Coord X:" << coord_x << " Coord Y:" << coord_y;
 
-    //qDebug() << "Formmating: " << formatedCoordinate;
+            x = sex2dec(coord_x.trimmed());
+            y = sex2dec(coord_y.trimmed());
 
-    // Check for decimal or sexagesimal notation
-    if (formatedCoordinate.size() == 1) {
-
-        // Decimal, should be one item in the array for DD only
-        coord.clear();
-        coord.append(formatedCoordinate.at(0).toDouble());
-
-    } else if (formatedCoordinate.size() == 2) {
-
-        // Sexagesimal, should be three items in the array when it has DDMM only
-        coord.clear();
-        for (int i = 0; i < formatedCoordinate.size(); i++) {
-            coord.append(formatedCoordinate.at(i).toDouble());
+            decLine = QString::number(x, 'f', 6) + ", " + QString::number(y, 'f', 6);
+            result.append(decLine + "\n");
+            i++;
+        } else {
+            qDebug() << "Error in line " << i << ": " << line;
         }
-
-    } else if (formatedCoordinate.size() == 3) {
-
-        // Sexagesimal, should be three items in the array when it has DDMMSS
-        coord.clear();
-        for (int i = 0; i < formatedCoordinate.size(); i++) {
-            coord.append(formatedCoordinate.at(i).toDouble());
-        }
-
-    } else {
-
-        qDebug() << "Coordinates have a wrong format!";
-        coord.clear();
-
     }
-
-    return coord;
+    return result;
 }
 
-QString MainWindow::formatMessyCoordinates(QString rawCoordinates)
+//QVector<double> MainWindow::coordFormatter(QString rawCoordinates)
+//{
+//    /**********************************************************************************
+//     *                                                                                *
+//     * Format the coordinates from a string (space separated) to a vector of doubles. *
+//     *                                                                                *
+//     **********************************************************************************/
+
+//    QVector<double> coord;
+//    QStringList formatedCoordinate;
+
+//    formatedCoordinate = rawCoordinates.split(" ");
+
+//    //qDebug() << "Formmating: " << formatedCoordinate;
+
+//    // Check for decimal or sexagesimal notation
+//    if (formatedCoordinate.size() == 1) {
+
+//        // Decimal, should be one item in the array for DD only
+//        coord.clear();
+//        coord.append(formatedCoordinate.at(0).toDouble());
+
+//    } else if (formatedCoordinate.size() == 2) {
+
+//        // Sexagesimal, should be three items in the array when it has DDMM only
+//        coord.clear();
+//        for (int i = 0; i < formatedCoordinate.size(); i++) {
+//            coord.append(formatedCoordinate.at(i).toDouble());
+//        }
+
+//    } else if (formatedCoordinate.size() == 3) {
+
+//        // Sexagesimal, should be three items in the array when it has DDMMSS
+//        coord.clear();
+//        for (int i = 0; i < formatedCoordinate.size(); i++) {
+//            coord.append(formatedCoordinate.at(i).toDouble());
+//        }
+
+//    } else {
+
+//        qDebug() << "Coordinates have a wrong format!";
+//        coord.clear();
+
+//    }
+
+//    return coord;
+//}
+
+QString MainWindow::formatMessyCoordinates(QString rawCoordinates) const
 {
     /*****************************************************************************
      *                                                                           *
@@ -222,25 +360,28 @@ QString MainWindow::formatMessyCoordinates(QString rawCoordinates)
     QString formattedCoordinates;
 
     // Replace and remove some stuff
+    // WARNING! Should not delete commas and tabs, they could be used as text delimiters
     rawCoordinates.replace("`", "\'");
-    rawCoordinates.replace(QChar::fromLatin1('´'), '\'');
-    rawCoordinates.replace(QChar::fromLatin1('°'), ' ');
-    rawCoordinates.replace(QChar::fromLatin1('º'), ' ');
     rawCoordinates.replace(QChar(148), ' ');
-    rawCoordinates.replace(QChar::fromLatin1('”'), ' ');
+
+//    rawCoordinates.replace(QChar::fromLatin1('”'), ' ');
+//    rawCoordinates.replace(QChat::fromLatin1('´'), '\'');
+//    rawCoordinates.replace(QString::fromLatin1('°'), ' ');
+//    rawCoordinates.replace(QString::fromLatin1('º'), ' ');
+
+    rawCoordinates.replace(QString::fromLatin1("”"), " ");
+    rawCoordinates.replace(QString::fromLatin1("´"), "\'");
+    rawCoordinates.replace(QString::fromLatin1("°"), " ");
+    rawCoordinates.replace(QString::fromLatin1("º"), " ");
     rawCoordinates.replace('_', ' ');
-//    rawCoordinates.replace(QString::fromLatin1("´"), "\'");
-//    rawCoordinates.replace(QString::fromLatin1("°"), " ");
-//    rawCoordinates.replace(QString::fromLatin1("º"), " ");
     rawCoordinates.replace("\"", " ");
     rawCoordinates.replace("\'", " ");
-    //rawCoordinates.replace(",", " "); // WARNING! Should not delete commas, could be an user selected separator
+    //rawCoordinates.replace(",", " ");
     rawCoordinates.replace("long.", " ", Qt::CaseInsensitive);
     rawCoordinates.replace("lon.", " ", Qt::CaseInsensitive);
     rawCoordinates.replace("lat.", " ", Qt::CaseInsensitive);
     rawCoordinates.replace("n.", " ", Qt::CaseInsensitive);
     rawCoordinates.replace("o.", " ", Qt::CaseInsensitive);
-//    rawCoordinates.replace("\t", " ", Qt::CaseInsensitive); // WARNING! Should not delete tabs, could be an user selected separator
     //rawCoordinates.replace(QRegExp("[\s]{2}"), " ");
 
     // Remove double spaces
@@ -256,10 +397,88 @@ QString MainWindow::formatMessyCoordinates(QString rawCoordinates)
     return formattedCoordinates;
 }
 
-void MainWindow::about()
+
+double MainWindow::sex2dec(QString sexagesimal) const
 {
-    AboutDialog aboutDlg;
-    aboutDlg.exec();
+    double dd{0}, mm{0}, ss{0};
+    double degrees{-1};
+    QString coord;
+    QStringList coordinates;
+
+    if (sexagesimal.isEmpty())
+        return degrees;
+
+    coord = formatMessyCoordinates(sexagesimal);
+    coordinates = coord.split(" ");
+
+    switch (coordinates.length()) {
+    case 0:
+        break;
+    case 1:
+    {
+        dd = coordinates.at(0).toDouble();
+        mm = 0;
+        ss = 0;
+    }
+        break;
+    case 2:
+    {
+        dd = coordinates.at(0).toDouble();
+        mm = coordinates.at(1).toDouble();
+        ss = 0;
+    }
+        break;
+    case 3:
+    {
+        dd = coordinates.at(0).toDouble();
+        mm = coordinates.at(1).toDouble();
+        ss = coordinates.at(2).toDouble();
+    }
+        break;
+    default:
+        // Should never be reached
+        break;
+    }
+
+    if (dd > 0)
+        degrees = dd + (mm / 60.0) + (ss / 3600.0);
+    else
+        degrees = dd - (mm / 60.0) - (ss / 3600.0);
+
+    qDebug() << dd << "°" << mm << "'" << ss << "\'\' = " << degrees;
+
+    return degrees;
+}
+
+double MainWindow::sex2dec(double dd, double mm, double ss) const
+{
+    double degrees;
+
+    if (dd > 0)
+        degrees = dd + (mm / 60.0) + (ss / 3600.0);
+    else
+        degrees = dd - (mm / 60.0) - (ss / 3600.0);
+
+    qDebug() << dd << "°" << mm << "'" << ss << "\'\' = " << degrees;
+
+    return degrees;
+}
+
+QChar MainWindow::setDelimiter()
+{
+    //QString delimiter;
+    if (ui->actionComma->isChecked()) {
+        delimiter = ',';
+        qDebug() << "  Selected delimiter is comma.";
+    } else if (ui->actionSpace->isChecked()) {
+        delimiter = ' ';
+        qDebug() << "  Selected delimiter is space.";
+    } else if (ui->actionTab->isChecked()) {
+        delimiter = '\t';
+        qDebug() << "  Selected delimiter is tabulator.";
+    }
+
+    return delimiter;
 }
 
 void MainWindow::updateStatusBar()
@@ -273,357 +492,4 @@ void MainWindow::updateStatusBar()
 
     datum.remove(QChar('&'));
     ui->statusBar->showMessage(datum);
-}
-
-void MainWindow::lat2dec(QString sexagesimal)
-{
-    double lat;
-    lat = sex2dec(sexagesimal);
-
-    ui->latitude->setText(QString::number(lat, 'f', 8));
-}
-
-void MainWindow::lon2dec(QString sexagesimal)
-{
-    double lon;
-    lon = sex2dec(sexagesimal);
-
-    ui->longitude->setText(QString::number(lon, 'f', 8));
-}
-
-double MainWindow::sex2dec(QString sexagesimal)
-{
-    double dd, mm, ss;
-    double degrees;
-
-    dd = sexagesimal.split("°").at(0).toDouble();
-    mm = sexagesimal.split("°").at(1).split("'").at(0).toDouble();
-    ss = sexagesimal.split("°").at(1).split("'").at(1).toDouble();
-
-    if (dd > 0)
-        degrees = dd + (mm / 60.0) + (ss / 3600.0);
-    else
-        degrees = dd - (mm / 60.0) - (ss / 3600.0);
-
-    qDebug() << dd << "°" << mm << "'" << ss << "\'\' = " << degrees;
-
-    return degrees;
-}
-
-double MainWindow::sex2dec(double dd, double mm, double ss)
-{
-    double degrees;
-
-    if (dd > 0)
-        degrees = dd + (mm / 60.0) + (ss / 3600.0);
-    else
-        degrees = dd - (mm / 60.0) - (ss / 3600.0);
-
-    qDebug() << dd << "°" << mm << "'" << ss << "\'\' = " << degrees;
-
-    return degrees;
-}
-
-void MainWindow::configureBatchConversion()
-{
-    if (ui->actionBatchConversion->isChecked()) {
-        ui->groupBox->setTitle("Input Coordinates");
-        ui->groupBox_2->setTitle("Output Coordinates");
-        ui->toUTM->hide();
-        ui->toGCS->hide();
-        ui->convertUTMtoGCSButton->show();
-        ui->convertGCStoUTMButton->show();
-
-        ui->geoCoordinates->show();
-        ui->utmCoordinates->show();
-
-        ui->groupDecimal->hide();
-        ui->groupSexagesimal->hide();
-        ui->label_3->hide();
-        ui->label_4->hide();
-        ui->label_5->hide();
-        ui->x->hide();
-        ui->y->hide();
-        ui->northern->hide();
-        ui->southern->hide();
-        ui->zone->hide();
-    } else {
-        ui->groupBox->setTitle("Geographic Coordinates");
-        ui->groupBox->setTitle("UTM Coordinates");
-        ui->toGCS->show();
-        ui->toUTM->show();
-        ui->convertUTMtoGCSButton->hide();
-        ui->convertGCStoUTMButton->hide();
-
-        ui->geoCoordinates->hide();
-        ui->utmCoordinates->hide();
-
-        ui->groupDecimal->show();
-        ui->groupSexagesimal->show();
-        ui->label_3->show();
-        ui->label_4->show();
-        ui->label_5->show();
-        ui->x->show();
-        ui->y->show();
-        ui->northern->show();
-        ui->southern->show();
-        ui->zone->show();
-    }
-
-    this->adjustSize();
-}
-
-void MainWindow::batchConversionGCStoUTM()
-{
-    /********************************************************
-     *                                                      *
-     *  Performs a batch conversion from GCS to UTM         *
-     *                                                      *
-     ********************************************************/
-
-    qDebug() << "Performing a batch conversion from GCS to UTM";
-
-    // Define coordinates delimiter or separator
-    QString delimiter = setDelimiter();
-
-    QStringList coordinates;
-    QString text;
-
-    // Get the text in the field, and separate each line
-    QStringList textLines = ui->geoCoordinates->toPlainText().split("\n");
-
-    if (textLines.isEmpty())
-        return;
-
-    // Format each line
-    for (int i = 0; i < textLines.length(); i++) {
-        qDebug() << "Line:" << i << textLines.at(i);
-
-        QVector<double> utm;
-
-        // Format the coordinates
-        QString formattedCoordinates = formatMessyCoordinates(textLines.at(i));
-        QStringList coordinatesList = formattedCoordinates.split(delimiter);
-
-        qDebug() << "  -Elements:" << coordinatesList.size();
-
-        switch (coordinatesList.size()) {
-        case 1: {
-            continue;
-        }
-            break;
-        case 2: {
-            double longitude;
-            double latitude;
-
-            longitude = coordinatesList.at(0).toDouble();
-            latitude = coordinatesList.at(1).toDouble();
-
-            GCSCoordinates gcs;
-            gcs.setLatitude(latitude);
-            gcs.setLongitude(longitude);
-
-            gcs.setWestern(true);
-
-            // Set ellipsoid
-            if (ui->actionHayford->isChecked())
-                gcs.setEllipsoid(QString("hayford"));
-            else if (ui->actionWGS84->isChecked())
-                gcs.setEllipsoid(QString("wgs84"));
-
-            // Perform conversion to UTM
-            utm = gcs.toUTM();
-
-        }
-            break;
-        case 3: {
-            continue;
-        }
-            break;
-        case 4: {
-            double longitude;
-            double latitude;
-
-            // Get latitude
-            longitude = sex2dec(coordinatesList.at(0).toDouble(),
-                               coordinatesList.at(1).toDouble(),
-                               0);
-
-            // Get longitude
-            latitude =  sex2dec(coordinatesList.at(2).toDouble(),
-                                 coordinatesList.at(3).toDouble(),
-                                 0);
-
-            formattedCoordinates.clear();
-            formattedCoordinates = QString::number(latitude, 'f', 6) +
-                    " " + QString::number(longitude, 'f', 6);
-
-            GCSCoordinates gcs;
-            gcs.setLatitude(latitude);
-            gcs.setLongitude(longitude);
-
-            gcs.setWestern(true);
-
-            // Set ellipsoid
-            if (ui->actionHayford->isChecked())
-                gcs.setEllipsoid(QString("hayford"));
-            else if (ui->actionWGS84->isChecked())
-                gcs.setEllipsoid(QString("wgs84"));
-
-            // Perform conversion to UTM
-            utm = gcs.toUTM();
-        }
-            break;
-        case 5: {
-            continue;
-        }
-            break;
-        case 6: {
-
-            double longitude;
-            double latitude;
-
-            // Get latitude
-            longitude = sex2dec(coordinatesList.at(0).toDouble(),
-                               coordinatesList.at(1).toDouble(),
-                               coordinatesList.at(2).toDouble());
-
-            // Get longitude
-            latitude =  sex2dec(coordinatesList.at(3).toDouble(),
-                                 coordinatesList.at(4).toDouble(),
-                                 coordinatesList.at(5).toDouble());
-
-            formattedCoordinates.clear();
-            formattedCoordinates = QString::number(latitude, 'f', 6) +
-                    " " + QString::number(longitude, 'f', 6);
-
-            GCSCoordinates gcs;
-            gcs.setLatitude(latitude);
-            gcs.setLongitude(longitude);
-
-            gcs.setWestern(true);
-
-            // Set ellipsoid
-            if (ui->actionHayford->isChecked())
-                gcs.setEllipsoid(QString("hayford"));
-            else if (ui->actionWGS84->isChecked())
-                gcs.setEllipsoid(QString("wgs84"));
-
-            // Perform conversion to UTM
-            utm = gcs.toUTM();
-        }
-            break;
-        default:
-            break;
-        }
-        coordinates.append(QString::number(utm.at(0), 'f', 6) + delimiter +
-                           QString::number(utm.at(1), 'f', 6) + delimiter +
-                           QString::number(utm.at(2)));
-    }
-
-    text = coordinates.join('\n');
-    ui->utmCoordinates->setText(text);
-}
-
-void MainWindow::batchConvertionUTMtoGCS()
-{
-    /**************************************************
-     *                                                *
-     * Performs a bath conversion from UTM to GCS     *
-     *                                                *
-     **************************************************/
-
-    qDebug() << "Performing a batch converion from UTM to GCS";
-
-    // Define coordinates delimiter or separator
-    QString delimiter = setDelimiter();
-
-    QStringList coordinates;
-    QString text;
-
-    // Get the text in the field, and separate each line
-    QStringList textLines = ui->geoCoordinates->toPlainText().split("\n");
-
-    if (textLines.isEmpty())
-        return;
-
-    // Format each line
-    for (int i = 0; i < textLines.length(); i++) {
-        qDebug() << "Line:" << i << textLines.at(i);
-
-        QPointF gcs;
-
-        // Format the coordinates
-        //QString formattedCoordinates = formatMessyCoordinates(textLines.at(i));
-        //QStringList coordinatesList = formattedCoordinates.split("\t");
-        QString line;
-        QStringList coordinatesList = textLines.at(i).split(delimiter);
-
-        qDebug() << "  -Elements:" << coordinatesList.size();
-
-        switch (coordinatesList.size()) {
-        case 1: {
-            textFormatError();
-        }
-            break;
-        case 2: {
-            textFormatError();
-        }
-            break;
-        case 3: {
-
-            // Configure UTM coordinates from GUI
-            UTMCoordinates utm;
-
-            // Set ellipsoid
-            if (ui->actionHayford->isChecked())
-                utm.setEllipsoid(QString("hayford"));
-            else if (ui->actionWGS84->isChecked())
-                utm.setEllipsoid(QString("wgs84"));
-
-            // Set coordinates
-            utm.setXY(coordinatesList.at(0).toDouble(), coordinatesList.at(1).toDouble());
-            utm.setZone(coordinatesList.at(2).toInt());
-            utm.setHemisphere(true);
-
-            // Perform conversion to GCS
-            gcs = utm.toGCS();
-
-            line.clear();
-            line = QString::number(gcs.x(), 'f', 6) + delimiter + QString::number(gcs.y(), 'f', 6);
-
-        }
-            break;
-        default: {
-            textFormatError();
-        }
-            break;
-        }
-        coordinates.append(line);
-    }
-
-    text = coordinates.join('\n');
-    ui->utmCoordinates->setText(text);
-}
-
-QString MainWindow::setDelimiter()
-{
-    QString delimiter;
-    if (ui->actionComma->isChecked()) {
-        delimiter = ",";
-        qDebug() << "  Selected delimiter is comma.";
-    } else if (ui->actionSpace->isChecked()) {
-        delimiter = " ";
-        qDebug() << "  Selected delimiter is space.";
-    } else if (ui->actionTab->isChecked()) {
-        delimiter = "\t";
-        qDebug() << "  Selected delimiter is tabulator.";
-    }
-
-    return delimiter;
-}
-
-void MainWindow::textFormatError()
-{
-    ui->statusBar->showMessage("Errors found! Maybe bad delimiter or incomplete coordinates.");
 }

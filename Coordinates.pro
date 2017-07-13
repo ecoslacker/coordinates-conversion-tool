@@ -17,13 +17,15 @@ SOURCES += main.cpp\
     ellipsoid.cpp \
     utmcoordinates.cpp \
     gcscoordinates.cpp \
-    aboutdialog.cpp
+    aboutdialog.cpp \
+    csv/csv.cpp
 
 HEADERS  += mainwindow.h \
     ellipsoid.h \
     utmcoordinates.h \
     gcscoordinates.h \
-    aboutdialog.h
+    aboutdialog.h \
+    csv/csv.h
 
 FORMS    += mainwindow.ui \
     aboutdialog.ui

@@ -1,0 +1,5 @@
+This code was taken from:
+
+https://github.com/hnaohiro/qt-csv
+
+No license was found about its usage.
