@@ -33,4 +33,6 @@ FORMS    += mainwindow.ui \
 RESOURCES += \
     icons.qrc
 
+RC_FILE = Coordinates.rc
+
 win32:RC_ICONS += Coordinates.ico

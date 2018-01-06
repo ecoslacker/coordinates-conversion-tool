@@ -71,6 +71,7 @@ private slots:
     double sex2dec(double dd, double mm, double ss) const;
     QChar setDelimiter();  // This function has no use
     void updateStatusBar();
+    void hideAndShow();
 };
 
 #endif // MAINWINDOW_H

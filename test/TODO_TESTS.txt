@@ -1,0 +1,21 @@
+TODO
+
+TESTS
+
+1. Empty data
+2. Non-numeric data
+3. Mixed delimiters
+4. Text delimited files
+5. Beyond maximum and minimum data required
+6. Invalid data (out of the world or ellipsoid)
+7. Data from other programs (Google Earth, ArcGIS, QGIS, Excel)
+8. Coordinates from:
+   A) Northern hemisphere
+   B) Southern hemisphere
+   C) Equator
+   D) Both Northern and Southern Hemispheres
+   E) Maybe more than this but I forgot..
+
+Why x-axis coordinates change when converting from UTM to LonLat and check/uncheck the Southern Hemisphere box?
+
+Maybe this should not happen!

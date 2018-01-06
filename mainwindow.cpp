@@ -19,14 +19,24 @@
  *
  */
 
+#include <stdexcept>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+
+using namespace std;
+
+const int MIN_UTM = 3;
+const int MIN_GEO = 2;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    // Set application icon in the title bar
+    QIcon appIcon("://icons/16x16/globe2.png");
+    this->setWindowIcon(appIcon);
 
     //this->adjustSize();
 
@@ -43,15 +53,20 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionComma,       SIGNAL(triggered(bool)), SLOT(setDelimiter()));
     connect(ui->actionTab,         SIGNAL(triggered(bool)), SLOT(setDelimiter()));
     connect(ui->actionSpace,       SIGNAL(triggered(bool)), SLOT(setDelimiter()));
-    connect(ui->convert,           SIGNAL(clicked()),   SLOT(conversion()));
-    connect(ui->actionAbout,       SIGNAL(triggered()), SLOT(about()));
-    connect(ui->actionHayford,     SIGNAL(triggered()), SLOT(updateStatusBar()));
-    connect(ui->actionWGS84,       SIGNAL(triggered()), SLOT(updateStatusBar()));
-    connect(ui->actionOpenFile,    SIGNAL(triggered()), SLOT(openCsvFile()));
-    connect(ui->actionSaveResults, SIGNAL(triggered()), SLOT(saveCsvFile()));
+    connect(ui->convert,           SIGNAL(clicked()),       SLOT(conversion()));
+    connect(ui->actionAbout,       SIGNAL(triggered()),     SLOT(about()));
+    connect(ui->actionHayford,     SIGNAL(triggered()),     SLOT(updateStatusBar()));
+    connect(ui->actionWGS84,       SIGNAL(triggered()),     SLOT(updateStatusBar()));
+    connect(ui->actionOpenFile,    SIGNAL(triggered()),     SLOT(openCsvFile()));
+    connect(ui->actionSaveResults, SIGNAL(triggered()),     SLOT(saveCsvFile()));
+    connect(ui->toUtm,             SIGNAL(toggled(bool)),   SLOT(hideAndShow()));
+    connect(ui->ddmmss,            SIGNAL(toggled(bool)),   SLOT(hideAndShow()));
 
     ui->actionWGS84->setChecked(true);
     ui->actionComma->setChecked(true);
+
+    // Initialize the state of the checkboxes
+    hideAndShow();
 
     delimiter = ',';
 }
@@ -74,13 +89,13 @@ void MainWindow::conversion()
 
     QString result;
 
+    // From LonLat to UTM Conversion
     if (ui->toUtm->isChecked()) {
         if (ui->ddmmss->isChecked()) {
-            // Convert from LatLon to UTM (input uses DDMMSS format)
+            // Convert from LonLat to UTM (input uses DDMMSS format)
+            // IMPORTANT: This just performs a simple conversion from DDMMSS to DECIMAL, NOT TO UTM!
             result = dms2dec(inputText);
             ui->outputText->setPlainText(result);
-            // ********* TODO: CONTINUE TO UTM !!! ********
-
         } else {
             // Convert from LatLon to UTM (input uses decimal format)
             result = gcs2utm(inputText);
@@ -88,6 +103,8 @@ void MainWindow::conversion()
         }
     } else {
         if (ui->ddmmss->isChecked()) {
+            // ********** THIS SHOULD NEVER BE REACHED **********
+            // In case this is reached, perform a simple conversion from DDMMSS to DECIMAL
             // Convert from LatLon (input uses DDMMSS format) to LatLon (output in decimal format)
             result = dms2dec(inputText);
             ui->outputText->setPlainText(result);
@@ -147,8 +164,10 @@ bool MainWindow::saveCsvFile()
     QFileInfo testFile(fileName);
     if (testFile.exists()) {
         QMessageBox msgBox;
-        msgBox.setText(tr("The document already exists."));
-        msgBox.setInformativeText(tr("Do you want to replace it?"));
+        msgBox.setWindowTitle(tr("Document already exists"));
+        msgBox.setText(tr("The document already exists. Do you want to replace it?"));
+        msgBox.setInformativeText(tr("A file or directory already exists in this location. Replacing it will overwrite its current content."));
+        msgBox.setIcon(QMessageBox::Warning);
         msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Cancel);
         msgBox.setDefaultButton(QMessageBox::Save);
         replace = msgBox.exec();
@@ -185,17 +204,66 @@ QString MainWindow::utm2gcs(QStringList inputText) const
      * Converts coordinates from Universal Transverse Mercator to Geographic Coordinate System *
      *                                                                                         *
      *******************************************************************************************/
+
     QString result;
+    QString textError;
+    QString lineNumber;
     QPointF gcs;
+    int errorCount{0};
+
     int i{1};
+
     foreach (QString line, inputText) {
         // Check the line
         if (!line.isEmpty()) {
-            QString gcs_line;
-            double coord_x = line.split(',').at(0).toDouble();
-            double coord_y = line.split(',').at(1).toDouble();
-            double utm_zone = line.split(',').at(2).toInt();
 
+            QString gcs_line;
+            QStringList lineCoordinates;
+
+            lineCoordinates = line.split(delimiter);
+            lineNumber.setNum(i);
+
+            // Check the delimiter and number of data
+            if (lineCoordinates.size() < MIN_UTM) {
+                QMessageBox msgBox;
+                msgBox.setWindowTitle(tr("Input error"));
+                msgBox.setText(tr("Not enough data, each line should have 3 numbers. Maybe wrong delimiter?"));
+                msgBox.setInformativeText(tr("The conversion cannot be performed with the input provided. Maybe the coordinates are in the wrong format or the selected delimiter is wrong."));
+                msgBox.setIcon(QMessageBox::Critical);
+                msgBox.setStandardButtons(QMessageBox::Ok);
+                msgBox.setDefaultButton(QMessageBox::Ok);
+                msgBox.exec();
+                return result;
+            } else if (lineCoordinates.size() > MIN_UTM) {
+                QString dataNumber, minData;
+                dataNumber.setNum(lineCoordinates.size());
+                minData.setNum(MIN_UTM);
+                errorCount++;
+                textError.append("Line " + lineNumber + " has more than " + minData + " data (" + dataNumber + "), remaining data will be ignored!\n");
+            }
+
+            // Check the conversion from string to double
+            bool ok_x;
+            bool ok_y;
+            bool ok_z;
+
+            double coord_x = lineCoordinates.at(0).toDouble(&ok_x);
+            double coord_y = lineCoordinates.at(1).toDouble(&ok_y);
+            double utm_zone = lineCoordinates.at(2).toInt(&ok_z);
+
+            if (!ok_x || !ok_y || !ok_z) {
+                QMessageBox msgBox;
+                msgBox.setWindowTitle(tr("Input error"));
+                msgBox.setText(tr("An error ocurred during conversion. Maybe empty or non-numeric data?"));
+                msgBox.setInformativeText(tr("The conversion cannot be performed with the input provided. Maybe the data provided is non-numeric or the selected delimiter is wrong."));
+                msgBox.setIcon(QMessageBox::Critical);
+                msgBox.setStandardButtons(QMessageBox::Ok);
+                msgBox.setDefaultButton(QMessageBox::Ok);
+                msgBox.exec();
+                return result;
+            }
+
+            // Allright, continue with the conversion
             UTMCoordinates utm;
 
             // Set ellipsoid
@@ -207,7 +275,12 @@ QString MainWindow::utm2gcs(QStringList inputText) const
             // Set coordinates
             utm.setXY(coord_x, coord_y);
             utm.setZone(utm_zone);
-            utm.setHemisphere(true); // WARNING: This suppose Northern
+
+            // Set the selected hemisphere
+            if (ui->useSouthernHemisphere->isChecked())
+                utm.setHemisphere(false); // Use Southern hemisphere
+            else
+                utm.setHemisphere(true);  // Use Northern hemisphere
 
             // Perform conversion to GCS
             gcs = utm.toGCS();
@@ -219,6 +292,18 @@ QString MainWindow::utm2gcs(QStringList inputText) const
             qDebug() << "Error in line " << i << ": " << line;
         }
     }
+
+    if (errorCount > 0) {
+        QMessageBox msgBox;
+        msgBox.setWindowTitle(tr("More data than required"));
+        msgBox.setText(tr("To perform this conversion, each line requires only 3 numbers. The input has more!"));
+        msgBox.setInformativeText(tr("The input data after this number will be ignored during conversion."));
+        msgBox.setDetailedText(textError);
+        msgBox.setIcon(QMessageBox::Warning);
+        msgBox.setStandardButtons(QMessageBox::Ok);
+        msgBox.setDefaultButton(QMessageBox::Ok);
+        msgBox.exec();
+    }
     return result;
 }
 
@@ -229,21 +314,77 @@ QString MainWindow::gcs2utm(QStringList inputText) const
      * Converts coordinates from Geographic Coordinate System to Universal Transverse Mercator *
      *                                                                                         *
      *******************************************************************************************/
+
     QString result;
     QVector<double> utm;
+    QString lineNumber;
+    QString textError;
+    int errorCount{0};
 
     int i{1};
+
     foreach (QString line, inputText) {
+
         // Check the line
         if (!line.isEmpty()) {
-            QString utm_line;
-            double coord_x = line.split(',').at(0).toDouble();
-            double coord_y = line.split(',').at(1).toDouble();
-            QString hemisphere = "N"; //WARNING: This suppose Northern
 
+            QString utm_line;
+            QString hemisphere;
+            QStringList lineCoordinates;
+
+            lineCoordinates = line.split(delimiter);
+            lineNumber.setNum(i);
+
+            // Check the delimiter and number of data
+            if (lineCoordinates.size() < MIN_GEO) {
+                QMessageBox msgBox;
+                msgBox.setWindowTitle(tr("Input error"));
+                msgBox.setText(tr("Not enough data, each line should have 2 numbers. Maybe wrong delimiter?"));
+                msgBox.setInformativeText(tr("The conversion cannot be performed with the input provided. Maybe the coordinates are in the wrong format or the selected delimiter is wrong."));
+                msgBox.setIcon(QMessageBox::Critical);
+                msgBox.setStandardButtons(QMessageBox::Ok);
+                msgBox.setDefaultButton(QMessageBox::Ok);
+                msgBox.exec();
+                return result;
+            } else if (lineCoordinates.size() > MIN_GEO) {
+                QString dataNumber, minData;
+                dataNumber.setNum(lineCoordinates.size());
+                minData.setNum(MIN_GEO);
+
+                textError.append("Line " + lineNumber + " has more than " + minData + " data (" + dataNumber + "), remaining data will be ignored!\n");
+
+                errorCount++;
+            }
+
+            // Check the conversion from string to double
+            bool ok_x;
+            bool ok_y;
+
+            double coord_x = lineCoordinates.at(0).toDouble(&ok_x);
+            double coord_y = lineCoordinates.at(1).toDouble(&ok_y);
+
+            if (!ok_x || !ok_y) {
+                QMessageBox msgBox;
+                msgBox.setWindowTitle(tr("Input error"));
+                msgBox.setText(tr("An error ocurred during conversion. Maybe empty or non-numeric data?"));
+                msgBox.setInformativeText(tr("The conversion cannot be performed with the input provided. Maybe the data provided is non-numeric or the selected delimiter is wrong."));
+                msgBox.setIcon(QMessageBox::Critical);
+                msgBox.setStandardButtons(QMessageBox::Ok);
+                msgBox.setDefaultButton(QMessageBox::Ok);
+                msgBox.exec();
+                return result;
+            }
+
+            // Allright, continue with the conversion
             GCSCoordinates gcs;
             gcs.setLongitude(coord_x);
             gcs.setLatitude(coord_y);
+
+            // Set the hemisphere from the latitude (y-axis coordinate)
+            if (coord_y < 0)
+                hemisphere = "S";
+            else
+                hemisphere = "N";
 
             // TODO: What happens if X = 0? And if Y = 0?
             if (coord_x <= 0)
@@ -269,6 +410,18 @@ QString MainWindow::gcs2utm(QStringList inputText) const
             qDebug() << "Error in line " << i << ": " << line;
         }
     }
+
+    if (errorCount > 0) {
+        QMessageBox msgBox;
+        msgBox.setWindowTitle(tr("More data than required"));
+        msgBox.setText(tr("To perform this conversion, each line requires only 2 numbers. The input has more!"));
+        msgBox.setInformativeText(tr("The remaining data after this number will be ignored during conversion."));
+        msgBox.setDetailedText(textError);
+        msgBox.setIcon(QMessageBox::Warning);
+        msgBox.setStandardButtons(QMessageBox::Ok);
+        msgBox.setDefaultButton(QMessageBox::Ok);
+        msgBox.exec();
+    }
     return result;
 }
 
@@ -278,13 +431,14 @@ QString MainWindow::dms2dec(QStringList inputText) const
 
     int i{1};
     foreach (QString line, inputText) {
+
         if (!line.isEmpty()) {
             qDebug() << "Line " << i << ": " << line;
             double x;
             double y;
             QString decLine;
-            QString coord_x = line.split(',').at(0);
-            QString coord_y = line.split(',').at(1);
+            QString coord_x = line.split(delimiter).at(0);
+            QString coord_y = line.split(delimiter).at(1);
 
             qDebug() << "Coord X:" << coord_x << " Coord Y:" << coord_y;
 
@@ -492,4 +646,32 @@ void MainWindow::updateStatusBar()
 
     datum.remove(QChar('&'));
     ui->statusBar->showMessage(datum);
+}
+
+void MainWindow::hideAndShow()
+{
+    if (ui->toLatLon->isChecked()) {
+
+        // Input in UTM and output in Lon Lat
+
+        ui->label_2->setText(tr("Input (UTM):"));
+        ui->label_3->setText(tr("Output (Lon Lat):"));
+        ui->ddmmss->setChecked(false);
+        ui->useSouthernHemisphere->setEnabled(true);
+        ui->ddmmss->setEnabled(false);
+    } else if (ui->toUtm->isChecked()) {
+
+        // Input in Lon Lat and output in UTM
+
+        ui->label_2->setText(tr("Input (Lon Lat):"));
+        ui->label_3->setText(tr("Output (UTM):"));
+        ui->useSouthernHemisphere->setChecked(false);
+        ui->useSouthernHemisphere->setEnabled(false);
+        ui->ddmmss->setEnabled(true);
+
+        if (ui->ddmmss->isChecked()) {
+            ui->label_2->setText(tr("Input (Lon Lat DDMMSS):"));
+            ui->label_3->setText(tr("Output (Lon Lat DECIMAL):"));
+        }
+    }
 }
