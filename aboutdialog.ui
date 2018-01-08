@@ -14,7 +14,7 @@
    <string>About...</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="icons.qrc">
+   <iconset resource="resources.qrc">
     <normaloff>:/icons/about.png</normaloff>:/icons/about.png</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -102,6 +102,19 @@ The program is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE WARRAN
         </widget>
        </item>
        <item>
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
         <layout class="QHBoxLayout" name="horizontalLayout">
          <item>
           <spacer name="horizontalSpacer">
@@ -122,7 +135,7 @@ The program is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE WARRAN
             <string>&amp;Close</string>
            </property>
            <property name="icon">
-            <iconset resource="icons.qrc">
+            <iconset resource="resources.qrc">
              <normaloff>:/icons/exit.png</normaloff>:/icons/exit.png</iconset>
            </property>
           </widget>
@@ -138,6 +151,9 @@ The program is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE WARRAN
       <layout class="QVBoxLayout" name="verticalLayout_3">
        <item>
         <widget class="QPlainTextEdit" name="plainTextEdit">
+         <property name="readOnly">
+          <bool>true</bool>
+         </property>
          <property name="plainText">
           <string>GNU GENERAL PUBLIC LICENSE
 Version 2, June 1991
@@ -241,7 +257,7 @@ END OF TERMS AND CONDITIONS</string>
   </layout>
  </widget>
  <resources>
-  <include location="icons.qrc"/>
+  <include location="resources.qrc"/>
  </resources>
  <connections>
   <connection>

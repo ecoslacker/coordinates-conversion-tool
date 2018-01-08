@@ -7,4 +7,7 @@
         <file>icons/globe.png</file>
         <file>icons/16x16/globe2.png</file>
     </qresource>
+    <qresource prefix="/docs">
+        <file>docs/help.html</file>
+    </qresource>
 </RCC>

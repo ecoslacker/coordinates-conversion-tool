@@ -18,20 +18,23 @@ SOURCES += main.cpp\
     utmcoordinates.cpp \
     gcscoordinates.cpp \
     aboutdialog.cpp \
-    csv/csv.cpp
+    csv/csv.cpp \
+    helpdialog.cpp
 
 HEADERS  += mainwindow.h \
     ellipsoid.h \
     utmcoordinates.h \
     gcscoordinates.h \
     aboutdialog.h \
-    csv/csv.h
+    csv/csv.h \
+    helpdialog.h
 
 FORMS    += mainwindow.ui \
-    aboutdialog.ui
+    aboutdialog.ui \
+    helpdialog.ui
 
 RESOURCES += \
-    icons.qrc
+    resources.qrc
 
 RC_FILE = Coordinates.rc
 

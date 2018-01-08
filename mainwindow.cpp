@@ -55,6 +55,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionSpace,       SIGNAL(triggered(bool)), SLOT(setDelimiter()));
     connect(ui->convert,           SIGNAL(clicked()),       SLOT(conversion()));
     connect(ui->actionAbout,       SIGNAL(triggered()),     SLOT(about()));
+    connect(ui->actionHelp,        SIGNAL(triggered()),     SLOT(help()));
     connect(ui->actionHayford,     SIGNAL(triggered()),     SLOT(updateStatusBar()));
     connect(ui->actionWGS84,       SIGNAL(triggered()),     SLOT(updateStatusBar()));
     connect(ui->actionOpenFile,    SIGNAL(triggered()),     SLOT(openCsvFile()));
@@ -78,8 +79,16 @@ MainWindow::~MainWindow()
 
 void MainWindow::about()
 {
+    // Showa the about dialog
     AboutDialog aboutDlg;
     aboutDlg.exec();
+}
+
+void MainWindow::help()
+{
+    // Shows the help dialog
+    HelpDialog helpDlg;
+    helpDlg.exec();
 }
 
 void MainWindow::conversion()
@@ -122,7 +131,7 @@ bool MainWindow::openCsvFile()
     QString text;
     QList<QStringList> data;
 
-    fileName = QFileDialog::getOpenFileName(this, tr("Open CSV File"), QDir::homePath(), tr("CSV Files (*.csv)"));
+    fileName = QFileDialog::getOpenFileName(this, tr("Open CSV File"), QDir::homePath(), tr("CSV Files (*.csv) | Text delimited files (*.txt) | All files (*.*)"));
     qDebug() << "Opening file:" << fileName;
 
     // Check file actually exists
@@ -624,9 +633,6 @@ QChar MainWindow::setDelimiter()
     if (ui->actionComma->isChecked()) {
         delimiter = ',';
         qDebug() << "  Selected delimiter is comma.";
-    } else if (ui->actionSpace->isChecked()) {
-        delimiter = ' ';
-        qDebug() << "  Selected delimiter is space.";
     } else if (ui->actionTab->isChecked()) {
         delimiter = '\t';
         qDebug() << "  Selected delimiter is tabulator.";

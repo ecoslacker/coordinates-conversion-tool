@@ -219,7 +219,6 @@
      </property>
      <addaction name="actionTab"/>
      <addaction name="actionComma"/>
-     <addaction name="actionSpace"/>
     </widget>
     <addaction name="menu_Datum"/>
     <addaction name="menuDelimiter"/>

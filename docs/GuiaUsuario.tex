@@ -34,7 +34,7 @@ Por el momento no se proporcionan binarios para sistemas operativos tipo Unix (m
 
 \section{Descripción}
 
-Para iniciar el programa haga clic en el ícono creado en el Menú de inicio o en el Escritorio del sistema. Aparecerá una ventana como la siguiente:
+Para iniciar el programa haga clic en el icono creado en el Menú de inicio o en el Escritorio del sistema. Aparecerá una ventana como la siguiente:
 
 \begin{figure}[h]
     \centering
@@ -43,7 +43,9 @@ Para iniciar el programa haga clic en el ícono creado en el Menú de inicio o e
     \label{fig:mainwindow}
 \end{figure}
 
-Por el momento el programa se encuentra únicamente en idioma inglés, por lo que se hará una breve descripción de su funcionamiento.
+La ventana mostrada en la figura \ref{fig:mainwindow}, muestra la apariencia del programa bajo el sistema macOS. En sistemas tipo Windows y Linux en la parte superior del programa se mostrará la barra de menú con los menús \textit{File}, \textit{Options} y \textit{Help}.
+
+Por el momento el programa se encuentra únicamente en idioma inglés, por lo que se hará una breve descripción de su funcionamiento. 
 
 \clearpage
 
@@ -69,9 +71,7 @@ Y el procedimiento inverso es:
 
 El programa puede convertir un par de coordenadas o una lista de varias coordenadas, antes de ver como se hace una conversión es necesario conocer los tipos de coordenadas.
 
-
 \subsection{Formatos de coordenadas}
-
 
 Las coordenadas Geográficas son ángulos, que representan latitud y longitud, generalmente se expresan de dos formas:
 
@@ -105,7 +105,9 @@ Finalmente las coordenadas UTM representan las posiciones X, Y en un plano divid
 \subsection{Entrada de datos}
 
 \begin{enumerate}
-\item Seleccionar el tipo de conversión. En la parte superior de la aplicación se puede leer el texto \textbf{Convertir a} (``Convert to:'') Si se tienen coordenadas geográficas y se quieren convertir a UTM hay que seleccionar la opción \textbf{UTM projection}. En caso de que las coordenadas estén en formato sexagesimal (Grados, minutos y segundos), se debe marcar la opción \textbf{Formatted as DDMMSS}. Por el contrario si las coordenadas están en la proyección UTM y se desea pasarlas a geográficas se debe seleccionar la opción (``Convert to:'') \textbf{Lat Lon}.
+\item Seleccionar el tipo de conversión. En la parte superior de la aplicación se puede leer el texto \textbf{Convertir a} (``Convert to:''). Si se tienen coordenadas geográficas y se quieren convertir a la proyección UTM hay que seleccionar la opción \textbf{UTM projection}. Por el contrario si las coordenadas están en la proyección UTM y se desea pasarlas a geográficas se debe seleccionar la opción (``Convert to:'') \textbf{Lon Lat}.
+
+En caso de que las coordenadas geográficas (Lon Lat) estén en formato sexagesimal (Grados, minutos y segundos), se debe marcar la opción \textbf{Formatted as DDMMSS} para convertirlas a coordenadas geográficas en formato decimal. Para separar los grados, minutos y segundos se recomienda usar espacios ya que el uso de otros caracteres podría generar resultados erróneos.
 
 \item Introducir las coordenadas.
 	\begin{enumerate}
@@ -140,7 +142,7 @@ Los resultados se pueden copiar o guardar según se requiera por el usuario.
 \subsection{Otras opciones}
 
 \begin{itemize}
-\item \textbf{Seleccionar el delimitador.} El programa soporta texto delimitado por comas, espacios y tabulaciones, por omisión se utiliza comas. Para cambiarlo solo hay que seleccionar el necesario en el menú \textbf{Options > Delimiter} antes de hacer la conversión.
+\item \textbf{Seleccionar el delimitador.} El programa soporta texto delimitado por comas o caracteres de tabulación, por omisión se utiliza comas. Para cambiarlo solo hay que seleccionar el necesario en el menú \textbf{Options > Delimiter} antes de hacer la conversión.
 \item \textbf{Seleccionar el dátum.} Por el momento el programa soporta dos dátums: Hayford y WGS84, por omisión se utiliza el segundo. Para cambiarlo se debe usar el menú \textbf{Options > Datum}.
 
 \end{itemize}

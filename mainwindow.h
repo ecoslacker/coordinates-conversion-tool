@@ -38,6 +38,7 @@
 #include "utmcoordinates.h"
 #include "gcscoordinates.h"
 #include "aboutdialog.h"
+#include "helpdialog.h"
 
 namespace Ui {
 class MainWindow;
@@ -59,6 +60,7 @@ private:
 
 private slots:
     void about();
+    void help();
     void conversion();
     bool openCsvFile();
     bool saveCsvFile();
@@ -72,6 +74,7 @@ private slots:
     QChar setDelimiter();  // This function has no use
     void updateStatusBar();
     void hideAndShow();
+
 };
 
 #endif // MAINWINDOW_H

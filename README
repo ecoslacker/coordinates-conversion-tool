@@ -3,18 +3,19 @@ COORDINATES CONVERSION TOOL
 This program is a tool for helping in the process of converting between geographic 
 (geodesic) coordinates and Universal Transverse Mercator (UTM) projection.
 
-WARNING: This program is under development and it has not been tested properly, use it
-under your own risk.
+WARNING: This program is under testing, use it under your own risk.
 
 REQUIREMENTS
 
-This program runs under Windows 10 and Unix-like platforms (macOS, Linux). There are no
-special requirements when running in binary form.
+This program runs under Windows 10 and Unix-like platforms (macOS, Linux)
+There are no special requirements when running in binary form.
 
 INSTALL
 
-To compile from source code Qt 5.8 is recommended. It has not be tested on other versions
-but it should work on compatible versions.
+At the moment we are not providing any installers.
+
+To compile from source code it's recommended to use the Qt 5.9.x series.
+It should work on another compatible versions.
 
 LICENSE
 
