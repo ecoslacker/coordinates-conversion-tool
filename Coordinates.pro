@@ -36,7 +36,7 @@ FORMS    += mainwindow.ui \
 RESOURCES += \
     resources.qrc
 
-ICON = Coordinates.icns
+ICON = icon_mac.icns
 
 RC_FILE = Coordinates.rc
 

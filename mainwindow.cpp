@@ -35,8 +35,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     // Set application icon in the title bar
-    QIcon appIcon("://icons/16x16/globe2.png");
-    this->setWindowIcon(appIcon);
+    QIcon appIcon("://icons/16x16/globe-icon.png");
+    setWindowIcon(appIcon);
 
     //this->adjustSize();
 

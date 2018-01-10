@@ -15,7 +15,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="resources.qrc">
-    <normaloff>:/icons/about.png</normaloff>:/icons/about.png</iconset>
+    <normaloff>:/icons/32x32/about.png</normaloff>:/icons/32x32/about.png</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
@@ -33,7 +33,7 @@
          <item>
           <widget class="QLabel" name="label_6">
            <property name="text">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;img src=&quot;:/icons/world.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;img src=&quot;://icons/16x16/globe-icon.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
           </widget>
          </item>
@@ -136,7 +136,7 @@ The program is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE WARRAN
            </property>
            <property name="icon">
             <iconset resource="resources.qrc">
-             <normaloff>:/icons/exit.png</normaloff>:/icons/exit.png</iconset>
+             <normaloff>:/icons/32x32/exit.png</normaloff>:/icons/32x32/exit.png</iconset>
            </property>
           </widget>
          </item>
