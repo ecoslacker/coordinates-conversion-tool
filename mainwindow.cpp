@@ -34,9 +34,13 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    // Set application icon in the title bar
-    QIcon appIcon("://icons/16x16/globe-icon.png");
-    setWindowIcon(appIcon);
+    // Set window icon in the title bar
+    QIcon winIcon("://icons/16x16/globe-icon.png");
+    setWindowIcon(winIcon);
+
+    // Set the application icon
+    QIcon appIcon("://icons/48x48/globe-icon.png");
+    QApplication::setWindowIcon(appIcon);
 
     //this->adjustSize();
 
@@ -53,13 +57,16 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionComma,       SIGNAL(triggered(bool)), SLOT(setDelimiter()));
     connect(ui->actionTab,         SIGNAL(triggered(bool)), SLOT(setDelimiter()));
     connect(ui->actionSpace,       SIGNAL(triggered(bool)), SLOT(setDelimiter()));
-    connect(ui->convert,           SIGNAL(clicked()),       SLOT(conversion()));
     connect(ui->actionAbout,       SIGNAL(triggered()),     SLOT(about()));
     connect(ui->actionHelp,        SIGNAL(triggered()),     SLOT(help()));
     connect(ui->actionHayford,     SIGNAL(triggered()),     SLOT(updateStatusBar()));
     connect(ui->actionWGS84,       SIGNAL(triggered()),     SLOT(updateStatusBar()));
     connect(ui->actionOpenFile,    SIGNAL(triggered()),     SLOT(openCsvFile()));
     connect(ui->actionSaveResults, SIGNAL(triggered()),     SLOT(saveCsvFile()));
+    connect(ui->actionConvert,     SIGNAL(triggered()),     SLOT(conversion()));
+    connect(ui->actionClear,       SIGNAL(triggered()),     SLOT(clear()));
+    connect(ui->convert,           SIGNAL(pressed()),       SLOT(conversion()));
+    connect(ui->clearButton,       SIGNAL(pressed()),     SLOT(clear()));
     connect(ui->toUtm,             SIGNAL(toggled(bool)),   SLOT(hideAndShow()));
     connect(ui->ddmmss,            SIGNAL(toggled(bool)),   SLOT(hideAndShow()));
 
@@ -680,4 +687,12 @@ void MainWindow::hideAndShow()
             ui->label_3->setText(tr("Output (Lon Lat DECIMAL):"));
         }
     }
+}
+
+void MainWindow::clear()
+{
+    ui->inputText->clear();
+    ui->outputText->clear();
+
+    hideAndShow();
 }

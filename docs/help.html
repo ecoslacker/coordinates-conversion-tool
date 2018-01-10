@@ -6,7 +6,7 @@
   p, li { white-space: pre-wrap; }
   </style>
 </head>
-<body style=" font-family:'Helvetica'; font-size:12pt; font-weight:400; font-style:normal;">
+<body style=" font-family:'Palatino'; font-size:large; font-weight:normal; font-style:normal;">
   <h1>Coordinates conversion tool</h1>
 
   <h2>Contents</h2>
@@ -15,7 +15,9 @@
           <li><a href="#description">Description</a></li>
           <li><a href="#installation">Installation and requirements</a></li>
           <li><a href="#features">Features</a></li>
+          <li><a href="#coordinates">About the coordinates</a></li>
           <li><a href="#usage">Usage</a></li>
+          <li><a href="#examples">Examples</a></li>
           <li><a href="#download">Download</a></li>
           <li><a href="#license">License</a></li>
   </ol>
@@ -24,7 +26,7 @@
 
   <h2 name="description">Description</h2>
   <p><strong>Coordinates Conversion Tool</strong> is a program designed to perform coordinates conversion between geodesic geographic coordinates and the Universal Transverse Mercator (UTM) projection.</p>
-  <p>The program interface has the structure shown in the figure. At the top there are options to select the type of conversion. Next there is a text field to input the coordinates to convert followed by a convert button and finally a text field for the results.</p>
+  <p>The program interface has a very minimalistic interface as shown in the figure. At the top of the program should be the menu bar followed by some options to select the type of conversion. Below there is a text field to input the coordinates to convert followed by a pair of buttons and finally a text field for the results.</p>
 
   <center>
   <figure>
@@ -34,7 +36,7 @@
 
   <h2 name="installation">Installation and requirements</h2>
 
-  <p>At the moment no installator is provided.</p>
+  <p>At the moment no installer is provided.</p>
 
   <p>This program does not have any special requirements, but it's designed to work in any modern computer using a graphical interface, so at least you should have:</p>
 
@@ -56,6 +58,33 @@
           <li>The program can convert both a single pair or a batch of coordinates.</p>
   </ul>
 
+  <h2 name="coordinates">About the coordinates</h2>
+
+  <p>Geographic coordinates are angles that represent the longitude and latitude, these coordinates can be expressed in two forms:</p>
+
+  <ul>
+          <li>Sexagesimal notation (base 60): these coordinates are expressed in degrees (&#176;), minutes (′) and seconds (′′). Seconds can have decimal point. The abbreviated form to this notation is DDMMSS where the DD are de degrees, MM are minutes and SS are seconds. These coordinates are sexagesimal because 60 seconds are a minute and 60 minutes are a degree. Examples:</li>
+          <pre>12&#176; 34′ 34′′</pre>
+          <pre>124&#176; 45′ 34.70′′</pre>
+          <li>Decimal notation (base 10): these coordinates are represented only as degrees (&#60;). The fractions based on sixtieths are transformed to decimal fractions of a degree, so the minutes and seconds are represented in the decimal fraction (DD.MMSS). Examples:</li>
+          <pre>23.2345&#176;</pre>
+          <pre>123.696&#176;</pre>
+  </ul>
+
+  <p>In some cases the coordinates will have a letter to indicate its hemisphere, in the case of latitude it could be N for Northern or S for Southern. For the longitude E and W are used for East or West from Greenwich meridian.</p>
+
+  <p>When the coordinates are in decimal format using a negative sign (-) is more convenient to represent coordinates at the West or Southern.</p>
+
+  <p>UTM coordinates are a 2D projection of the world. They represent X-Axis and Y-Axis coordinates in a plane divided by time zones. Because of that they require three elements:</p>
+
+  <ul>
+          <li>A x-axis coordinate</li>
+          <li>A y-axis coordinate</li>
+          <li>A time zone or UTM zone</li>
+  </ul>
+
+  <p>IMPORTANT: each time zone has a central meridian as a coordinate origin. The x-axis coordinates are relative to this meridian so is important to know the time zone.</p>
+
   <h2 name="usage">Usage</h2>
 
   <p>The procedure to convert coordinates from geographic (Lon Lat) format to UTM is as follows:</p>
@@ -63,35 +92,130 @@
   <h3 name="converting">Converting coordinates</h3>
 
   <ol>
-          <li>Select the type of conversion. At the top of the program there is a section called "Convert to". If you have geographic coordinates and want to convert them to UTM, you should select the option to UTM. Select the option Formatted as DDMMSS only if the input coordinates are in sexagesimal notation. If you have UTM coordinates and want them converted to geographic, then select the option to LatLon.</li>
-          <li>Input coordinates. Write the coordinates in the appropriate format. If you have the coordinates in a text delimited file you can open it in the menu File > Open file. The file has to be formatted as shown in the figure.</br></li>
+          <li>Select the type of conversion. At the top of the program there is a section called <strong>Convert to</strong>. If you have geographic coordinates and want to convert them to UTM, then you should select the option <strong>UTM Projection</strong>. If you have UTM coordinates and want them converted to geographic, then select the option <strong>Lon Lat</strong>.</li>
+          <li>Select the option <strong>Formatted as DDMMSS</strong> only if the input coordinates are in sexagesimal notation.</li>
+          <li>Write the input coordinates in the appropriate format. The data should be delimited and have tree columns for UTM or two columns for Lon Lat, first column should have longitude or x-axis coordinates, the second column should have the latitude or y-axis coordinates, the third column only is necessary for the UTM zone.</li>
+          <p>If the input coordinates are in Lon Lat delimited by commas (,) then the data should be formatted as:</p>
+          <pre>&#60;longitude&#62;, &#60;latitude&#62;</pre>
+          <p>If delimited by tab characters:</p>
+          <pre>&#60;longitude&#62; &#60;TAB&#62; &#60;latitude&#62;</pre>
+          <p>NOTE: All the data beyond the second column will be ignored. Only the data from the first two columns will be used as input.</p>
+          <p>In the other hand if data is in UTM projection delimited by commas (,):</p>
+          <pre>&#60;x-axis coordinate&#62;, &#60;y-axis coordinate&#62;, &#60;UTM Zone&#62; </pre>
+          <p>Finally if the data is UTM delimited by tab characters:</p>
+          <pre>&#60;x-axis coordinate&#62; &#60;TAB&#62; &#60;y-axis coordinate&#62; &#60;TAB&#62; &#60;UTM Zone&#62; </pre>
+          <p>NOTE: All the data beyond the third column will be ignored. Only the data from the first three columns will be used as input.</p></p>
+          <li>If you have the coordinates in a text delimited file you can open it in the menu <strong>File &#62; Open file</strong>. The file has to be formatted as described before. An example is shown in the figure.</br></li>
             <center>
             <figure>
                 <img src=":/docs/docs/img/textfile.png" alt="Text file" width="432" height="286">
             </figure>
             </center>
-          <li>The data should be delimited and have tree columns, first column should have longitude or x-axis coordinates, the second column should have the latitude or y-axis coordinates, the third column is for the UTM zone.</li>
-          <li>Perform conversion. Once the input coordinates are correct the only thing to do is to click the button Convert. The results should appear in the output field. You can copy or save the coordinates as desired.</br></li>
+          <li>Once the input coordinates are correct the only thing to do is to click the button <strong>Convert</strong> to perform the conversion. The results should appear in the output field. You can copy or save the coordinates as desired.</br></li>
             <center>
             <figure>
                 <img src=":/docs/docs/img/conversion.png" alt="Conversion example" width="400" height="522">
             </figure>
             </center>
-          <li>Other options. The program supports commas, tabs or blank spaces char delimiters. Also WGS84 and Hayford ellipsoids are supported.</li>
-
+          <li>Other options. The program supports characters such as commas or tabs as delimiters. Also WGS84 and Hayford ellipsoids are supported. You can access to this options in the <strong>Options</strong> menu.</li>
   </ol>
 
-  <h3 name="DDMMSS">Converting from DD MM SS</h3>
+  <h2 name="examples">Examples</h2>
 
-  <p>Converting sexagesimal coordinates is a special case, because there are a lot of symbols that people can use to represent degrees, minutes and seconds. Considering that, this program only works with these data delimited by blank spaces. So:</p>
+  <p>A few examples are given to show the use of the program:</p>
 
-  <pre>38&#176;57'33.804'' N, 95&#176;15'55.739'' W</pre>
+  <h3>Converting from Lon Lat to UTM</h3>
 
-  <p>Should be entered as:</p>
+    <ol>
+            <li>The following data is an example of geographic coordinates. Note: these coordinates have a negative longitude, this means the coordinates are at West, latitude is positive so they are in Northern hemisphere.</li>
+            <li>In the field <b>Convert to</b>, select the option <b>UTM Projection</b>.</li>
+            <li>Put the coordinates in the input field.</li>
+<pre>-98.89273509148279,19.48140598665632</pre>
+<pre>-98.89189222559285,19.48320155021565</pre>
+<pre>-98.89398620136308,19.48405466007059</pre>
+<pre>-98.89454050833828,19.483166896007</pre>
+<pre>-98.8943555405168,19.48309174472131</pre>
+<pre>-98.89399905383283,19.48253626284203</pre>
+<pre>-98.89336948934489,19.48172575842547</pre>
+<pre>-98.89319738470853,19.48155973869978</pre>
+<pre>-98.89295965133576,19.48145653715895</pre>
+<pre>-98.89273509148279,19.48140598665632</pre>
+            <li>Press the button <b>Convert</b> and the results should appear in the output field.</li>
+            <li>You can copy or save the results as desired.</li>
+    </ol>
 
-  <pre>-95 15 55.739, 38 57 33.804</pre>
+  <h3>Converting from UTM to geographic coordinates</h3>
 
-  <p>at least for now. I will be working to recognize this format automagically but that will take time.</p>
+    <ol>
+            <li>The following data is a set of coordinates in UTM projection.</li>
+            <li>In the field <b>Convert to</b>, select the option <b>Lon Lat</b>.</li>
+            <li>You can see that the checkbox <b>Southern</b> is enabled, leave it unchecked to indicate that the coordinates are at Northern hemisphere.</li>
+            <li>Put the coordinates in the input field.</li>
+<pre>	511256.762427	2154098.860945	14</pre>
+<pre>	511345.090833	2154297.602268	14</pre>
+<pre>	511125.285504	2154391.865149	14</pre>
+<pre>	511067.175754	2154293.594893	14</pre>
+<pre>	511086.591858	2154285.291046	14</pre>
+<pre>	511124.040417	2154223.847927	14</pre>
+<pre>	511190.164429	2154134.203449	14</pre>
+<pre>	511208.237105	2154115.843961	14</pre>
+<pre>	511233.192808	2154104.439850	14</pre>
+<pre>	511256.762427	2154098.860945	14</pre>
+            <li>In this case the coordinates are delimited by tab characters. So go to menu <b>Options &#62; Delimiter &#62; Tabs</b> to change the default delimiter from commas to tabs.</li>
+            <li>Press the button <b>Convert</b> to perform the conversion, the results should appear in the output field.</li>
+            <li>You can copy or save the results as desired.</li>
+    </ol>
+
+  <h3>Converting from Lon Lat in sexagesimal (DDMMSS) format to decimal format</h3>
+
+  <ol>
+            <li>Converting sexagesimal coordinates (represented as degrees, minutes and seconds) is a special case, because there are a lot of symbols that people can use to represent degrees, minutes and seconds. Considering that, this program only works with these data delimited by blank spaces. So to input:</li>
+            <pre>38&#176;57'33.804'' N, 95&#176;15'55.739'' W</pre>
+            <p>You should write it as:</p>
+            <pre>-95 15 55.739, 38 57 33.804</pre>
+            <p>Note that the order changed because the program will need the longitude (in this case represented as W) in the first column. The latitude (N) should be in the second column. All the symbols (&#176;, ' and '') were replaced by blank spaces.</p>
+            <li>The following data is an example of sexagesimal coordinates. These data should be loaded to the input field of the program:</li>
+<pre>-98 53 33.846, 19 28 53.062</pre>
+<pre>-98 53 30.812, 19 28 59.526</pre>
+<pre>-98 53 38.35, 19 29 2.597</pre>
+<pre>-98 53 40.346, 19 28 59.401</pre>
+<pre>-98 53 39.68, 19 28 59.13</pre>
+<pre>-98 53 38.397, 19 28 57.131</pre>
+<pre>-98 53 36.13, 19 28 54.213</pre>
+<pre>-98 53 35.511, 19 28 53.615</pre>
+<pre>-98 53 34.655, 19 28 53.244</pre>
+<pre>-98 53 33.846, 19 28 53.062</pre>
+             <li>Next in the field <b>Convert to</b>, the option <b>UTM Projection</b> should be selected.</li>
+             <li>At this point the checkbox <b>Formatted as: DD&#176;MM'SS''</b> should become enabled, check it. This is a very important step.</li>
+             <li>Once the option is checked, the input label should change to <b>Input (Lon Lat DDMMSS)</b> and the output label should read <b>Output (Lon Lat DECIMAL)</b>.</li>
+             <li>Finally, press the button <b>Convert</b>, the conversion should be performed successfully. See figure:
+             <center>
+             <figure>
+               <img src=":/docs/docs/img/conversion_ddmmss.png" alt="Main Window" width="400" height="522">
+             </figure>
+             </center>
+  </ol>
+
+  <p><strong>NOTE</strong>: currently the direct conversion from sexagesimal Lon Lat coordinates to UTM projection is not supported. So you should convert to decimal format before to convert to UTM.</p>
+
+  <h3>Openning and saving text files</h3>
+
+    <p>To open a text file:</p>
+
+    <ol>
+            <li>Use the menu <strong>File &#62; Open file</strong>.</li>
+            <li>A dialog window will pop up asking for a file. Select the file where the data is saved. You should select only comma or tab delimited text files with extension CSV or TXT.</li>
+            <li>The file should have the format described above, if not there will be errors.</li>
+            <li>The data in the text file will appear in the input field.</li>
+    </ol>
+
+    <p>To save a text file:</p>
+    <ol>
+            <li>Use the menu <strong>File &#62; Save results</strong>.</li>
+            <li>A dialog window will pop up asking for a file name and a location.</li>
+            <li>Once you had provided a file name and selected a folder the file will be saved. Your user should have permission to write into the selected folder, otherwise the file will not be saved.</li>
+            <li>Only the text in the output field will be saved into the file.</li>
+    </ol>
 
   <h2 name="download">Download</h2>
 
@@ -99,7 +223,7 @@
 
   <h2 name="license">License</h2>
 
-  <pre>Conversion between geographic coordinates (LatLon) and UTM projection</pre>
+  <pre>Conversion between geographic coordinates (Lon Lat) and UTM projection</pre>
 
   <pre>Copyright (C) 2014-2018 Eduardo Jim&eacute;nez <ecoslacker@irriapps.com></pre>
 

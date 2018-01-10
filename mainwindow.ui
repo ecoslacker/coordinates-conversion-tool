@@ -14,7 +14,7 @@
    <string>Coordinates Conversion Tool</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="resources.qrc">
+   <iconset>
     <normaloff>:/icons/32x32/globe-icon.png</normaloff>:/icons/32x32/globe-icon.png</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
@@ -156,6 +156,16 @@
        </widget>
       </item>
       <item>
+       <widget class="QPushButton" name="clearButton">
+        <property name="toolTip">
+         <string>Clear the text in both input and output text fields.</string>
+        </property>
+        <property name="text">
+         <string>&amp;Clear</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <spacer name="horizontalSpacer_3">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -185,6 +195,9 @@
       <property name="whatsThis">
        <string>The output of the conversion will be here.</string>
       </property>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
      </widget>
     </item>
    </layout>
@@ -207,7 +220,7 @@
       <string>&amp;Datum</string>
      </property>
      <property name="icon">
-      <iconset resource="resources.qrc">
+      <iconset>
        <normaloff>:/icons/16x16/world-go.png</normaloff>:/icons/16x16/world-go.png</iconset>
      </property>
      <addaction name="actionWGS84"/>
@@ -239,7 +252,15 @@
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+    <addaction name="actionConvert"/>
+    <addaction name="actionClear"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuTools"/>
    <addaction name="menuOptions"/>
    <addaction name="menuHelp"/>
   </widget>
@@ -265,7 +286,7 @@
   </action>
   <action name="actionAbout">
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset>
      <normaloff>:/icons/32x32/about.png</normaloff>:/icons/32x32/about.png</iconset>
    </property>
    <property name="text">
@@ -328,7 +349,7 @@
   </action>
   <action name="actionQuit">
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset>
      <normaloff>:/icons/32x32/exit.png</normaloff>:/icons/32x32/exit.png</iconset>
    </property>
    <property name="text">
@@ -338,11 +359,29 @@
     <string>Ctrl+Q</string>
    </property>
   </action>
+  <action name="actionConvert">
+   <property name="text">
+    <string>Convert</string>
+   </property>
+  </action>
+  <action name="actionClear">
+   <property name="text">
+    <string>Clear</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources>
-  <include location="resources.qrc"/>
- </resources>
+ <tabstops>
+  <tabstop>toUtm</tabstop>
+  <tabstop>toLatLon</tabstop>
+  <tabstop>useSouthernHemisphere</tabstop>
+  <tabstop>ddmmss</tabstop>
+  <tabstop>inputText</tabstop>
+  <tabstop>convert</tabstop>
+  <tabstop>clearButton</tabstop>
+  <tabstop>outputText</tabstop>
+ </tabstops>
+ <resources/>
  <connections>
   <connection>
    <sender>actionQuit</sender>

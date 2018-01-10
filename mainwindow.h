@@ -74,6 +74,7 @@ private slots:
     QChar setDelimiter();  // This function has no use
     void updateStatusBar();
     void hideAndShow();
+    void clear();
 
 };
 
