@@ -6,25 +6,38 @@
   p, li { white-space: pre-wrap; }
   </style>
 </head>
-<body style=" font-family:'Helvetica'; font-size:9pt; font-weight:400; font-style:normal;">
+<body style=" font-family:'Helvetica'; font-size:12pt; font-weight:400; font-style:normal;">
   <h1>Coordinates conversion tool</h1>
-  
+
   <h2>Contents</h2>
   <p>
   <ol>
-    <li><a href="#introduction">Introduction</a></li>
-	<li><a href="#requirements">Requirements</a></li>
-    <li><a href="#installation">Installation</a></li>
-  <ol>
+          <li><a href="#description">Description</a></li>
+          <li><a href="#installation">Installation and requirements</a></li>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#usage">Usage</a></li>
+          <li><a href="#download">Download</a></li>
+          <li><a href="#license">License</a></li>
+  </ol>
+
   </p>
-  
-  <h2 name="introduction">Introduction</h2>
-  <p>Coordinates Conversion Tool is a program...
-  </p>
-  
-  <h2 name="requirements">Requirements</h2>
-  <p>To install this program in your computer, you need the following minimum requirements:</p>
-  
+
+  <h2 name="description">Description</h2>
+  <p><strong>Coordinates Conversion Tool</strong> is a program designed to perform coordinates conversion between geodesic geographic coordinates and the Universal Transverse Mercator (UTM) projection.</p>
+  <p>The program interface has the structure shown in the figure. At the top there are options to select the type of conversion. Next there is a text field to input the coordinates to convert followed by a convert button and finally a text field for the results.</p>
+
+  <center>
+  <figure>
+    <img src=":/docs/docs/img/mainwindow.png" alt="Main Window" width="400" height="522">
+  </figure>
+  </center>
+
+  <h2 name="installation">Installation and requirements</h2>
+
+  <p>At the moment no installator is provided.</p>
+
+  <p>This program does not have any special requirements, but it's designed to work in any modern computer using a graphical interface, so at least you should have:</p>
+
   <ul>
     <li>SO: Windows 10, macOS Sierra 10.12, Linux 4.4 (64 bits recommended)</li>
     <li>50 MB free space in hard drive</li>
@@ -32,9 +45,72 @@
     <li>1 GB of RAM</li>
     <li>Keyboard, mouse and screen</li>
   </ul>
-  
-  <h2 name="installation">Installation</h2>
-  <p>To install this program...</p>
-  
+
+  <h2 name="features">Features</h2>
+
+  <p>Some technical features are:</p>
+
+  <ul>
+          <li>This program is coded in the C++ programming language.</li>
+          <li>The Qt5 libraries are used for the graphical interface.</li>
+          <li>The program can convert both a single pair or a batch of coordinates.</p>
+  </ul>
+
+  <h2 name="usage">Usage</h2>
+
+  <p>The procedure to convert coordinates from geographic (Lon Lat) format to UTM is as follows:</p>
+
+  <h3 name="converting">Converting coordinates</h3>
+
+  <ol>
+          <li>Select the type of conversion. At the top of the program there is a section called "Convert to". If you have geographic coordinates and want to convert them to UTM, you should select the option to UTM. Select the option Formatted as DDMMSS only if the input coordinates are in sexagesimal notation. If you have UTM coordinates and want them converted to geographic, then select the option to LatLon.</li>
+          <li>Input coordinates. Write the coordinates in the appropriate format. If you have the coordinates in a text delimited file you can open it in the menu File > Open file. The file has to be formatted as shown in the figure.</br></li>
+            <center>
+            <figure>
+                <img src=":/docs/docs/img/textfile.png" alt="Text file" width="432" height="286">
+            </figure>
+            </center>
+          <li>The data should be delimited and have tree columns, first column should have longitude or x-axis coordinates, the second column should have the latitude or y-axis coordinates, the third column is for the UTM zone.</li>
+          <li>Perform conversion. Once the input coordinates are correct the only thing to do is to click the button Convert. The results should appear in the output field. You can copy or save the coordinates as desired.</br></li>
+            <center>
+            <figure>
+                <img src=":/docs/docs/img/conversion.png" alt="Conversion example" width="400" height="522">
+            </figure>
+            </center>
+          <li>Other options. The program supports commas, tabs or blank spaces char delimiters. Also WGS84 and Hayford ellipsoids are supported.</li>
+
+  </ol>
+
+  <h3 name="DDMMSS">Converting from DD MM SS</h3>
+
+  <p>Converting sexagesimal coordinates is a special case, because there are a lot of symbols that people can use to represent degrees, minutes and seconds. Considering that, this program only works with these data delimited by blank spaces. So:</p>
+
+  <pre>38&#176;57'33.804'' N, 95&#176;15'55.739'' W</pre>
+
+  <p>Should be entered as:</p>
+
+  <pre>-95 15 55.739, 38 57 33.804</pre>
+
+  <p>at least for now. I will be working to recognize this format automagically but that will take time.</p>
+
+  <h2 name="download">Download</h2>
+
+  <p>To dowload this program go to: <a href="http://www.irriapps.com/coordinates-conversion-tool/">http://www.irriapps.com/coordinates-conversion-tool/</a>.</p>
+
+  <h2 name="license">License</h2>
+
+  <pre>Conversion between geographic coordinates (LatLon) and UTM projection</pre>
+
+  <pre>Copyright (C) 2014-2018 Eduardo Jim&eacute;nez <ecoslacker@irriapps.com></pre>
+
+  <pre>This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the Free
+Software Foundation; either version 2 of the License, or (at your option)
+any later version.</pre>
+
+  <pre>This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+more details.</pre>
 </body>
 </html>

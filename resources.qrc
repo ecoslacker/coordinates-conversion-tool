@@ -9,5 +9,11 @@
     </qresource>
     <qresource prefix="/docs">
         <file>docs/help.html</file>
+        <file>docs/img/conversion_ddmmss.png</file>
+        <file>docs/img/conversion.png</file>
+        <file>docs/img/geo2utm.png</file>
+        <file>docs/img/mainwindow.png</file>
+        <file>docs/img/textfile.png</file>
+        <file>docs/img/utm2geo.png</file>
     </qresource>
 </RCC>
