@@ -14,7 +14,7 @@
    <string>Coordinates Conversion Tool</string>
   </property>
   <property name="windowIcon">
-   <iconset>
+   <iconset resource="resources.qrc">
     <normaloff>:/icons/32x32/globe-icon.png</normaloff>:/icons/32x32/globe-icon.png</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
@@ -220,7 +220,7 @@
       <string>&amp;Datum</string>
      </property>
      <property name="icon">
-      <iconset>
+      <iconset resource="resources.qrc">
        <normaloff>:/icons/16x16/world-go.png</normaloff>:/icons/16x16/world-go.png</iconset>
      </property>
      <addaction name="actionWGS84"/>
@@ -229,6 +229,10 @@
     <widget class="QMenu" name="menuDelimiter">
      <property name="title">
       <string>Delimiter</string>
+     </property>
+     <property name="icon">
+      <iconset resource="resources.qrc">
+       <normaloff>:/icons/32x32/text-csv.png</normaloff>:/icons/32x32/text-csv.png</iconset>
      </property>
      <addaction name="actionTab"/>
      <addaction name="actionComma"/>
@@ -286,8 +290,8 @@
   </action>
   <action name="actionAbout">
    <property name="icon">
-    <iconset>
-     <normaloff>:/icons/32x32/about.png</normaloff>:/icons/32x32/about.png</iconset>
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/32x32/dialog-information.png</normaloff>:/icons/32x32/dialog-information.png</iconset>
    </property>
    <property name="text">
     <string>&amp;About</string>
@@ -321,6 +325,10 @@
    </property>
   </action>
   <action name="actionHelp">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/32x32/help.png</normaloff>:/icons/32x32/help.png</iconset>
+   </property>
    <property name="text">
     <string>&amp;Help</string>
    </property>
@@ -332,6 +340,10 @@
    </property>
   </action>
   <action name="actionOpenFile">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/32x32/document-open-3.png</normaloff>:/icons/32x32/document-open-3.png</iconset>
+   </property>
    <property name="text">
     <string>Open file</string>
    </property>
@@ -340,6 +352,10 @@
    </property>
   </action>
   <action name="actionSaveResults">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/32x32/document-save-4.png</normaloff>:/icons/32x32/document-save-4.png</iconset>
+   </property>
    <property name="text">
     <string>Save results</string>
    </property>
@@ -349,7 +365,7 @@
   </action>
   <action name="actionQuit">
    <property name="icon">
-    <iconset>
+    <iconset resource="resources.qrc">
      <normaloff>:/icons/32x32/exit.png</normaloff>:/icons/32x32/exit.png</iconset>
    </property>
    <property name="text">
@@ -360,13 +376,27 @@
    </property>
   </action>
   <action name="actionConvert">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/32x32/run-rebuild.png</normaloff>:/icons/32x32/run-rebuild.png</iconset>
+   </property>
    <property name="text">
     <string>Convert</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
+   </property>
   </action>
   <action name="actionClear">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/32x32/edit-clear-locationbar-rtl.png</normaloff>:/icons/32x32/edit-clear-locationbar-rtl.png</iconset>
+   </property>
    <property name="text">
     <string>Clear</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+L</string>
    </property>
   </action>
  </widget>
@@ -381,7 +411,9 @@
   <tabstop>clearButton</tabstop>
   <tabstop>outputText</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>actionQuit</sender>
