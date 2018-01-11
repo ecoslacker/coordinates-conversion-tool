@@ -138,7 +138,7 @@ bool MainWindow::openCsvFile()
     QString text;
     QList<QStringList> data;
 
-    fileName = QFileDialog::getOpenFileName(this, tr("Open CSV File"), QDir::homePath(), tr("CSV Files (*.csv) | Text delimited files (*.txt) | All files (*.*)"));
+    fileName = QFileDialog::getOpenFileName(this, tr("Open CSV File"), QDir::homePath(), tr("CSV Files (*.csv);;Text delimited files (*.txt);;All files (*.*)"));
     qDebug() << "Opening file:" << fileName;
 
     // Check file actually exists
@@ -173,7 +173,7 @@ bool MainWindow::saveCsvFile()
     QList<QStringList> data;
     int replace = true;
 
-    fileName = QFileDialog::getSaveFileName(this, tr("Save CSV file"), QDir::homePath(), tr("CSV Files (*.csv)"));
+    fileName = QFileDialog::getSaveFileName(this, tr("Save CSV file"), QDir::homePath(), tr("CSV Files (*.csv);;Text delimited files (*.txt)"));
     qDebug() << "Saving file:" << fileName;
 
     // Check file actually exists
