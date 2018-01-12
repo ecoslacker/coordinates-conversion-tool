@@ -7,15 +7,15 @@
     <x>0</x>
     <y>0</y>
     <width>500</width>
-    <height>305</height>
+    <height>355</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>About...</string>
+   <string>About</string>
   </property>
   <property name="windowIcon">
    <iconset resource="resources.qrc">
-    <normaloff>:/icons/32x32/about.png</normaloff>:/icons/32x32/about.png</iconset>
+    <normaloff>:/icons/32x32/dialog-information.png</normaloff>:/icons/32x32/dialog-information.png</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
@@ -113,6 +113,14 @@ The program is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE WARRAN
           </size>
          </property>
         </spacer>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_8">
+         <property name="text">
+          <string>Icons by: Open Icon Library 
+Globe Icon by: Icojam (Blue Bits Icons)</string>
+         </property>
+        </widget>
        </item>
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout">

@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<Document>
+	<name>Campeche.kml</name>
+	<Style id="s_ylw-pushpin_hl">
+		<IconStyle>
+			<scale>1.3</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+			</Icon>
+			<hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+	</Style>
+	<StyleMap id="m_ylw-pushpin">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#s_ylw-pushpin1</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#s_ylw-pushpin_hl1</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="m_ylw-pushpin0">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#s_ylw-pushpin</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#s_ylw-pushpin_hl0</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="s_ylw-pushpin">
+		<IconStyle>
+			<scale>1.1</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+			</Icon>
+			<hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+	</Style>
+	<Style id="s_ylw-pushpin0">
+		<IconStyle>
+			<scale>1.1</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+			</Icon>
+			<hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+	</Style>
+	<Style id="s_ylw-pushpin1">
+		<IconStyle>
+			<scale>1.1</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+			</Icon>
+			<hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+		<PolyStyle>
+			<fill>0</fill>
+		</PolyStyle>
+	</Style>
+	<Style id="s_ylw-pushpin_hl0">
+		<IconStyle>
+			<scale>1.3</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+			</Icon>
+			<hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+	</Style>
+	<StyleMap id="m_ylw-pushpin1">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#s_ylw-pushpin0</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#s_ylw-pushpin_hl</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="s_ylw-pushpin_hl1">
+		<IconStyle>
+			<scale>1.3</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+			</Icon>
+			<hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+		<PolyStyle>
+			<fill>0</fill>
+		</PolyStyle>
+	</Style>
+	<Folder>
+		<name>Campeche</name>
+		<open>1</open>
+		<Placemark>
+			<name>Candelaria Road</name>
+			<styleUrl>#m_ylw-pushpin0</styleUrl>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-91.19851368725631,18.37832780584567,0 -91.12315647823065,18.33449296351315,0 -91.07677350977826,18.23912064125368,0 -91.06473535862101,18.23369263862621,0 -91.05865446986975,18.22374066829096,0 -91.05179584378922,18.21936949289111,0 -91.04465700926272,18.21071725319092,0 -91.04559722408058,18.19460894329989,0 -91.04255743701897,18.18963099810971,0 
+				</coordinates>
+			</LineString>
+		</Placemark>
+		<Placemark>
+			<name>Escarcega</name>
+			<LookAt>
+				<longitude>-90.70804521148865</longitude>
+				<latitude>18.60614680965156</latitude>
+				<altitude>0</altitude>
+				<heading>0.9313714872409976</heading>
+				<tilt>2.291314523015869</tilt>
+				<range>11947.36765437</range>
+				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+			</LookAt>
+			<styleUrl>#m_ylw-pushpin1</styleUrl>
+			<Point>
+				<gx:drawOrder>1</gx:drawOrder>
+				<coordinates>-90.73647106286739,18.60753330196525,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Agriculture</name>
+			<styleUrl>#m_ylw-pushpin</styleUrl>
+			<Polygon>
+				<tessellate>1</tessellate>
+				<outerBoundaryIs>
+					<LinearRing>
+						<coordinates>
+							-90.34679353091072,19.30730979901265,0 -90.36859243708707,19.30678499767262,0 -90.36599942247018,19.28937747720776,0 -90.33402912814836,19.29063698161428,0 -90.33459681430794,19.28607979715511,0 -90.32930946586377,19.28415917079564,0 -90.3305554143973,19.26911217235202,0 -90.34700938157077,19.26894606006472,0 -90.3547082661665,19.27136510099202,0 -90.35246480234966,19.26173634608068,0 -90.34764416189373,19.26073835518119,0 -90.3476461317309,19.10694769023499,0 -90.34251733947578,19.09727877742377,0 -90.35431667889716,19.08697911460197,0 -90.35023509205008,19.07321885710262,0 -90.32990247181691,19.07516232342643,0 -90.33839078840145,19.06115472475173,0 -90.33725622792423,19.04515835883373,0 -90.3198799478518,19.04441320177749,0 -90.31506658476643,19.01922119059772,0 -90.33525591166295,18.99991396851033,0 -90.31472090276191,18.98815521023588,0 -90.30728724699752,18.99762581241424,0 -90.2746577213244,18.9874851474489,0 -90.23030365987621,18.98489561752825,0 -90.21725065872414,18.98603755470272,0 -90.21794138484522,18.99975160715238,0 -90.20583545991461,19.0018213727436,0 -90.20116508471168,19.0181759106739,0 -90.19378292587555,19.0253486988966,0 -90.19164324881292,19.03580892242031,0 -90.21326093459277,19.04075676628121,0 -90.2216104606658,19.10614781664216,0 -90.23118922314939,19.10996564213128,0 -90.24060642915876,19.12199037008889,0 -90.23762951160941,19.12604317904525,0 -90.22120269464826,19.12666599028591,0 -90.22106688384379,19.13350507546334,0 -90.2369665643818,19.13515370607414,0 -90.23993454280055,19.13155700624094,0 -90.26068088042423,19.13237614629407,0 -90.26171797642525,19.12874516976776,0 -90.28102808844378,19.12908040277143,0 -90.27486919080516,19.14767556209672,0 -90.29159228341172,19.15708888633892,0 -90.28787609902,19.17435859054465,0 -90.26653444939768,19.20363670504404,0 -90.2663292171201,19.23922110700964,0 -90.275500197447,19.23983954885962,0 -90.27714439421264,19.25492911128135,0 -90.27230329190454,19.25529977788364,0 -90.27305997049378,19.26626786218921,0 -90.29236724124803,19.26797982006733,0 -90.29343770036425,19.26252079390245,0 -90.31420786798748,19.2638011713361,0 -90.31282301267922,19.28614978287339,0 -90.32056104753886,19.28628726829133,0 -90.32208252242219,19.30869595995315,0 -90.32933975209023,19.30882562243507,0 -90.33014874168363,19.31752134390551,0 -90.34709572279499,19.31736788320494,0 -90.34679353091072,19.30730979901265,0 
+						</coordinates>
+					</LinearRing>
+				</outerBoundaryIs>
+			</Polygon>
+		</Placemark>
+	</Folder>
+</Document>
+</kml>

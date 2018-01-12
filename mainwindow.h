@@ -1,7 +1,7 @@
 /*
  * Coordinates
  * Conversion between geographic coordinates (LatLon) and UTM projection
- * Copyright (C) 2014-2017 Eduardo Jiménez <ecoslacker@irriapps.com>
+ * Copyright (C) 2014-2018 Eduardo Jiménez <ecoslacker@irriapps.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
