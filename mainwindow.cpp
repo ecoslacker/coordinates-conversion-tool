@@ -171,28 +171,28 @@ bool MainWindow::saveCsvFile()
     QString fileName;
     QStringList text;
     QList<QStringList> data;
-    int replace = true;
+//    int replace = true;
 
     fileName = QFileDialog::getSaveFileName(this, tr("Save CSV file"), QDir::homePath(), tr("CSV Files (*.csv);;Text delimited files (*.txt)"));
     qDebug() << "Saving file:" << fileName;
 
-    // Check file actually exists
-    QFileInfo testFile(fileName);
-    if (testFile.exists()) {
-        QMessageBox msgBox;
-        msgBox.setWindowTitle(tr("Document already exists"));
-        msgBox.setText(tr("The document already exists. Do you want to replace it?"));
-        msgBox.setInformativeText(tr("A file or directory already exists in this location. Replacing it will overwrite its current content."));
-        msgBox.setIcon(QMessageBox::Warning);
-        msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Cancel);
-        msgBox.setDefaultButton(QMessageBox::Save);
-        replace = msgBox.exec();
-    }
+//    // Check file actually exists
+//    QFileInfo testFile(fileName);
+//    if (testFile.exists()) {
+//        QMessageBox msgBox;
+//        msgBox.setWindowTitle(tr("Document already exists"));
+//        msgBox.setText(tr("The document already exists. Do you want to replace it?"));
+//        msgBox.setInformativeText(tr("A file or directory already exists in this location. Replacing it will overwrite its current content."));
+//        msgBox.setIcon(QMessageBox::Warning);
+//        msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Cancel);
+//        msgBox.setDefaultButton(QMessageBox::Save);
+//        replace = msgBox.exec();
+//    }
 
-    if (replace == false) {
-        qDebug() << "Exiting without replacing file: " << fileName;
-        return false;
-    }
+//    if (replace == false) {
+//        qDebug() << "Exiting without replacing file: " << fileName;
+//        return false;
+//    }
 
     // Creating data
     text = ui->outputText->toPlainText().split("\n");
