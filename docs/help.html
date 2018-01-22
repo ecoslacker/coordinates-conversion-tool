@@ -63,10 +63,10 @@
   <p>Geographic coordinates are angles that represent the longitude and latitude, these coordinates can be expressed in two forms:</p>
 
   <ul>
-          <li>Sexagesimal notation (base 60): these coordinates are expressed in degrees (&#176;), minutes (′) and seconds (′′). Seconds can have decimal point. The abbreviated form to this notation is DDMMSS where the DD are de degrees, MM are minutes and SS are seconds. These coordinates are sexagesimal because 60 seconds are a minute and 60 minutes are a degree. Examples:</li>
-          <pre>12&#176; 34′ 34′′</pre>
-          <pre>124&#176; 45′ 34.70′′</pre>
-          <li>Decimal notation (base 10): these coordinates are represented only as degrees (&#60;). The fractions based on sixtieths are transformed to decimal fractions of a degree, so the minutes and seconds are represented in the decimal fraction (DD.MMSS). Examples:</li>
+          <li>Sexagesimal notation (base 60): these coordinates are expressed in degrees (&#176;), minutes (&#39;) and seconds (&#34;). Seconds can have decimal point. The abbreviated form to this notation is DDMMSS where the DD are de degrees, MM are minutes and SS are seconds. These coordinates are sexagesimal because 60 seconds are a minute and 60 minutes are a degree. Examples:</li>
+          <pre>12&#176; 34&#39; 34&#34;</pre>
+          <pre>124&#176; 45&#39; 34.70&#34;</pre>
+          <li>Decimal notation (base 10): these coordinates are represented only as degrees (&#176;). The fractions based on sixtieths are transformed to decimal fractions of a degree, so the minutes and seconds are represented in the decimal fraction (DD.MMSS). Examples:</li>
           <pre>23.2345&#176;</pre>
           <pre>123.696&#176;</pre>
   </ul>
@@ -170,10 +170,10 @@
 
   <ol>
             <li>Converting sexagesimal coordinates (represented as degrees, minutes and seconds) is a special case, because there are a lot of symbols that people can use to represent degrees, minutes and seconds. Considering that, this program only works with these data delimited by blank spaces. So to input:</li>
-            <pre>38&#176;57'33.804'' N, 95&#176;15'55.739'' W</pre>
+            <pre>38&#176;57&#39;33.804&#34; N, 95&#176;15&#39;55.739&#34; W</pre>
             <p>You should write it as:</p>
             <pre>-95 15 55.739, 38 57 33.804</pre>
-            <p>Note that the order changed because the program will need the longitude (in this case represented as W) in the first column. The latitude (N) should be in the second column. All the symbols (&#176;, ' and '') were replaced by blank spaces.</p>
+            <p>Note that the order changed because the program will need the longitude (in this case represented as W) in the first column. The latitude (N) should be in the second column. All the symbols (&#176;, &#39; and &#39;) were replaced by blank spaces.</p>
             <li>The following data is an example of sexagesimal coordinates. These data should be loaded to the input field of the program:</li>
 <pre>-98 53 33.846, 19 28 53.062</pre>
 <pre>-98 53 30.812, 19 28 59.526</pre>
@@ -186,7 +186,7 @@
 <pre>-98 53 34.655, 19 28 53.244</pre>
 <pre>-98 53 33.846, 19 28 53.062</pre>
              <li>Next in the field <b>Convert to</b>, the option <b>UTM Projection</b> should be selected.</li>
-             <li>At this point the checkbox <b>Formatted as: DD&#176;MM'SS''</b> should become enabled, check it. This is a very important step.</li>
+             <li>At this point the checkbox <b>Formatted as: DD&#176;MM&#39;SS&#34;</b> should become enabled, check it. This is a very important step.</li>
              <li>Once the option is checked, the input label should change to <b>Input (Lon Lat DDMMSS)</b> and the output label should read <b>Output (Lon Lat DECIMAL)</b>.</li>
              <li>Finally, press the button <b>Convert</b>, the conversion should be performed successfully. See figure:
              <center>
@@ -225,7 +225,7 @@
 
   <pre>Conversion between geographic coordinates (Lon Lat) and UTM projection</pre>
 
-  <pre>Copyright (C) 2014-2018 Eduardo Jim&eacute;nez <ecoslacker@irriapps.com></pre>
+  <pre>Copyright (C) 2014-2018 Eduardo Jim&eacute;nez &lt;ecoslacker@irriapps.com&gt;</pre>
 
   <pre>This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the Free
